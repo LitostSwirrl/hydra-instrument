@@ -66,10 +66,11 @@ const CURVE_OPTIONS = [
 ]
 
 const sectionHeaderStyle: React.CSSProperties = {
-  fontSize: '8px',
+  fontSize: '11px',
+  fontWeight: 600,
   textTransform: 'uppercase',
   letterSpacing: '2px',
-  color: 'rgba(90, 40, 180, 0.6)',
+  color: '#4488FF',
   fontFamily: 'sans-serif',
   margin: 0,
   cursor: 'pointer',
@@ -82,7 +83,7 @@ const inputStyle: React.CSSProperties = {
   backgroundColor: 'rgba(255,255,255,0.04)',
   border: 'none',
   borderRadius: '3px',
-  color: '#7c4ddb',
+  color: '#4488FF',
   fontSize: '11px',
   fontFamily: 'monospace',
   textAlign: 'center',
@@ -104,7 +105,7 @@ export function MappingPanel({ mappings, onAdd, onRemove, onUpdate }: MappingPan
             <span
               style={{
                 fontSize: '10px',
-                color: '#6a6a78',
+                color: '#999999',
                 fontFamily: 'sans-serif',
                 fontStyle: 'italic',
               }}
@@ -133,15 +134,17 @@ export function MappingPanel({ mappings, onAdd, onRemove, onUpdate }: MappingPan
                     options={SOURCE_OPTIONS}
                     value={mapping.source}
                     onChange={(v) => onUpdate(mapping.id, 'source', v)}
+                    accentColor="#4488FF"
                   />
                 </div>
-                <span style={{ fontSize: '10px', color: '#6a6a78', flexShrink: 0 }}>\u2192</span>
+                <span style={{ fontSize: '10px', color: '#999999', flexShrink: 0 }}>\u2192</span>
                 <div style={{ flex: 1 }}>
                   <Dropdown
                     label=""
                     options={TARGET_OPTIONS}
                     value={mapping.target}
                     onChange={(v) => onUpdate(mapping.id, 'target', v)}
+                    accentColor="#4488FF"
                   />
                 </div>
                 <button
@@ -149,7 +152,7 @@ export function MappingPanel({ mappings, onAdd, onRemove, onUpdate }: MappingPan
                   style={{
                     background: 'none',
                     border: 'none',
-                    color: '#6a6a78',
+                    color: '#999999',
                     cursor: 'pointer',
                     fontSize: '12px',
                     padding: '0 2px',
@@ -163,7 +166,7 @@ export function MappingPanel({ mappings, onAdd, onRemove, onUpdate }: MappingPan
               </div>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span style={{ fontSize: '9px', color: '#6a6a78', textTransform: 'uppercase', letterSpacing: '1px', fontFamily: 'sans-serif' }}>
+                <span style={{ fontSize: '9px', color: '#999999', textTransform: 'uppercase', letterSpacing: '1px', fontFamily: 'sans-serif' }}>
                   range
                 </span>
                 <input
@@ -174,7 +177,7 @@ export function MappingPanel({ mappings, onAdd, onRemove, onUpdate }: MappingPan
                     onUpdate(mapping.id, 'range', [parseFloat(e.target.value) || 0, mapping.range[1]])
                   }
                 />
-                <span style={{ fontSize: '9px', color: '#6a6a78', fontFamily: 'monospace' }}>\u2014</span>
+                <span style={{ fontSize: '9px', color: '#999999', fontFamily: 'monospace' }}>\u2014</span>
                 <input
                   type="number"
                   value={mapping.range[1]}
@@ -192,6 +195,7 @@ export function MappingPanel({ mappings, onAdd, onRemove, onUpdate }: MappingPan
                 max={1}
                 step={0.01}
                 onChange={(v) => onUpdate(mapping.id, 'smooth', v)}
+                accentColor="#4488FF"
               />
 
               <Dropdown
@@ -199,6 +203,7 @@ export function MappingPanel({ mappings, onAdd, onRemove, onUpdate }: MappingPan
                 options={CURVE_OPTIONS}
                 value={mapping.curve}
                 onChange={(v) => onUpdate(mapping.id, 'curve', v)}
+                accentColor="#4488FF"
               />
             </div>
           ))}
@@ -212,8 +217,8 @@ export function MappingPanel({ mappings, onAdd, onRemove, onUpdate }: MappingPan
               fontSize: '9px',
               textTransform: 'uppercase',
               letterSpacing: '1px',
-              backgroundColor: 'rgba(90,40,180,0.2)',
-              color: '#7c4ddb',
+              backgroundColor: 'rgba(68,136,255,0.2)',
+              color: '#4488FF',
               border: 'none',
               borderRadius: '3px',
               cursor: 'pointer',

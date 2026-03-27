@@ -30,7 +30,7 @@ export function PresetBar({ activeSlot, slots, onSelect, onExport, onImport, onC
     fontSize: '9px',
     textTransform: 'uppercase',
     letterSpacing: '1px',
-    color: '#6a6a78',
+    color: '#999999',
     cursor: 'pointer',
     fontFamily: 'sans-serif',
     padding: '2px 4px',
@@ -59,15 +59,15 @@ export function PresetBar({ activeSlot, slots, onSelect, onExport, onImport, onC
                 fontFamily: 'monospace',
                 transition: 'background-color 150ms, color 150ms',
                 backgroundColor: isActive
-                  ? '#5a28b4'
+                  ? '#FF1493'
                   : isOccupied
                   ? 'rgba(255,255,255,0.05)'
                   : 'rgba(255,255,255,0.02)',
                 color: isActive
                   ? '#ffffff'
                   : isOccupied
-                  ? '#c8c8d0'
-                  : '#6a6a78',
+                  ? '#cccccc'
+                  : '#999999',
               }}
             >
               {i + 1}
@@ -80,26 +80,26 @@ export function PresetBar({ activeSlot, slots, onSelect, onExport, onImport, onC
         <button
           style={actionButtonStyle}
           onClick={onExport}
-          onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#c8c8d0' }}
-          onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#6a6a78' }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#cccccc' }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#999999' }}
         >
           Export
         </button>
-        <span style={{ color: '#3a3a42', fontSize: '10px', fontFamily: 'sans-serif' }}>|</span>
+        <span style={{ color: '#444444', fontSize: '10px', fontFamily: 'sans-serif' }}>|</span>
         <button
           style={actionButtonStyle}
           onClick={handleImportClick}
-          onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#c8c8d0' }}
-          onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#6a6a78' }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#cccccc' }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#999999' }}
         >
           Import
         </button>
-        <span style={{ color: '#3a3a42', fontSize: '10px', fontFamily: 'sans-serif' }}>|</span>
+        <span style={{ color: '#444444', fontSize: '10px', fontFamily: 'sans-serif' }}>|</span>
         <button
           style={actionButtonStyle}
           onClick={onCopyURL}
-          onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#c8c8d0' }}
-          onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#6a6a78' }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#cccccc' }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#999999' }}
         >
           Copy URL
         </button>
