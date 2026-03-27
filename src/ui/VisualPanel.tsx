@@ -30,6 +30,7 @@ const SOURCE_OPTIONS = [
   { value: 'particleField', label: 'particleField' },
   { value: 'voidPulse', label: 'voidPulse' },
   { value: 'ritualFire', label: 'ritualFire' },
+  { value: 'paisleyFlow', label: 'paisleyFlow' },
 ]
 
 const TRANSFORM_OPTIONS = [
@@ -90,6 +91,11 @@ const SOURCE_PARAMS: Record<string, { key: string; label: string; min: number; m
     { key: 'turbulence', label: 'Turb', min: 0, max: 3, step: 0.01 },
     { key: 'height', label: 'Height', min: 0, max: 2, step: 0.01 },
   ],
+  paisleyFlow: [
+    { key: 'density', label: 'Density', min: 1, max: 8, step: 0.1 },
+    { key: 'speed', label: 'Speed', min: 0, max: 3, step: 0.01 },
+    { key: 'colorShift', label: 'Color', min: 0, max: 6.28, step: 0.01 },
+  ],
 }
 
 const TRANSFORM_PARAMS: Record<string, { key: string; label: string; min: number; max: number; step: number }[]> = {
@@ -104,10 +110,11 @@ const TRANSFORM_PARAMS: Record<string, { key: string; label: string; min: number
 }
 
 const sectionHeaderStyle: React.CSSProperties = {
-  fontSize: '8px',
+  fontSize: '11px',
+  fontWeight: 600,
   textTransform: 'uppercase',
   letterSpacing: '2px',
-  color: 'rgba(90, 40, 180, 0.6)',
+  color: '#00E676',
   fontFamily: 'sans-serif',
   margin: 0,
   cursor: 'pointer',
@@ -115,10 +122,10 @@ const sectionHeaderStyle: React.CSSProperties = {
 }
 
 const subLabelStyle: React.CSSProperties = {
-  fontSize: '8px',
+  fontSize: '10px',
   textTransform: 'uppercase',
   letterSpacing: '1.5px',
-  color: 'rgba(90, 40, 180, 0.4)',
+  color: 'rgba(0, 230, 118, 0.7)',
   marginBottom: '4px',
   marginTop: '8px',
 }
@@ -151,6 +158,7 @@ export function VisualPanel({
             options={SOURCE_OPTIONS}
             value={source}
             onChange={onSourceChange}
+            accentColor="#00E676"
           />
 
           {sourceParams.length > 0 && (
@@ -165,6 +173,7 @@ export function VisualPanel({
                   max={param.max}
                   step={param.step}
                   onChange={(v) => onSourceArgChange(param.key, v)}
+                  accentColor="#00E676"
                 />
               ))}
             </>
@@ -191,7 +200,7 @@ export function VisualPanel({
                       <span
                         style={{
                           fontSize: '10px',
-                          color: '#7c4ddb',
+                          color: '#00E676',
                           fontFamily: 'monospace',
                           textTransform: 'lowercase',
                         }}
@@ -203,7 +212,7 @@ export function VisualPanel({
                         style={{
                           background: 'none',
                           border: 'none',
-                          color: '#6a6a78',
+                          color: '#999999',
                           cursor: 'pointer',
                           fontSize: '12px',
                           padding: '0 2px',
@@ -223,6 +232,7 @@ export function VisualPanel({
                         max={param.max}
                         step={param.step}
                         onChange={(v) => onTransformArgChange(i, param.key, v)}
+                        accentColor="#00E676"
                       />
                     ))}
                   </div>
@@ -239,6 +249,7 @@ export function VisualPanel({
                 options={TRANSFORM_OPTIONS}
                 value={addTransformValue}
                 onChange={setAddTransformValue}
+                accentColor="#00E676"
               />
             </div>
             <button
@@ -248,8 +259,8 @@ export function VisualPanel({
                 fontSize: '9px',
                 textTransform: 'uppercase',
                 letterSpacing: '1px',
-                backgroundColor: 'rgba(90,40,180,0.2)',
-                color: '#7c4ddb',
+                backgroundColor: 'rgba(0,230,118,0.2)',
+                color: '#00E676',
                 border: 'none',
                 borderRadius: '3px',
                 cursor: 'pointer',
