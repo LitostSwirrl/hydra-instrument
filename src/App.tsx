@@ -127,6 +127,7 @@ export default function App() {
   const [started, setStarted] = useState(false)
   const [activeSlot, setActiveSlot] = useState(0)
   const [currentPreset, setCurrentPreset] = useState<Preset | null>(null)
+  const currentPresetRef = useRef<Preset | null>(null)
 
   // Visual UI state (bridged from chain config)
   const [visualSource, setVisualSource] = useState('osc')
@@ -202,6 +203,7 @@ export default function App() {
       }
 
       setCurrentPreset(preset)
+      currentPresetRef.current = preset
 
       // Update URL hash
       if (presetManagerRef.current) {
@@ -336,7 +338,7 @@ export default function App() {
       onSavePreset: (slot) => {
         const state = useAppStore.getState()
         const preset: Preset = {
-          name: currentPreset?.name ?? `preset-${slot}`,
+          name: currentPresetRef.current?.name ?? `preset-${slot}`,
           audio: {
             synthType: state.synthType,
             synthParams: { ...state.synthParams },
@@ -364,6 +366,7 @@ export default function App() {
         }
         pm.savePreset(slot, preset)
         setCurrentPreset(preset)
+        currentPresetRef.current = preset
         setActiveSlot(slot - 1)
       },
     })
@@ -385,7 +388,7 @@ export default function App() {
       rafRef.current = requestAnimationFrame(tick)
     }
     rafRef.current = requestAnimationFrame(tick)
-  }, [started, applyPreset, currentPreset?.name])
+  }, [started, applyPreset])
 
   // ---------- cleanup on unmount ----------
   useEffect(() => {

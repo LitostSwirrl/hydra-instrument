@@ -49,35 +49,6 @@ export function Slider({ label, value, min, max, step = 0.01, onChange }: Slider
             background: `linear-gradient(to right, #5a28b4 0%, #5a28b4 ${pct}%, rgba(255,255,255,0.1) ${pct}%, rgba(255,255,255,0.1) 100%)`,
           }}
         />
-        <style>{`
-          input[type='range']::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #7c4ddb;
-            cursor: pointer;
-            box-shadow: 0 0 4px rgba(90, 40, 180, 0.6);
-            transition: background 150ms;
-          }
-          input[type='range']::-moz-range-thumb {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #7c4ddb;
-            cursor: pointer;
-            border: none;
-            box-shadow: 0 0 4px rgba(90, 40, 180, 0.6);
-            transition: background 150ms;
-          }
-          input[type='range']::-webkit-slider-thumb:hover {
-            background: #9a6dff;
-          }
-          input[type='range']::-moz-range-thumb:hover {
-            background: #9a6dff;
-          }
-        `}</style>
       </div>
 
       <span
