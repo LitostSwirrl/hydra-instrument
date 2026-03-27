@@ -26,6 +26,7 @@ interface KeyboardCallbacks {
   onPanic: () => void
   onLoadPreset: (slot: number) => void
   onSavePreset: (slot: number) => void
+  onToggleMode: () => void
 }
 
 export class KeyboardHandler {
@@ -87,6 +88,12 @@ export class KeyboardHandler {
       if (key === 'x') {
         const oct = useAppStore.getState().octave
         useAppStore.getState().setOctave(oct + 1)
+        return
+      }
+
+      // M: toggle UI mode
+      if (key === 'm') {
+        this.callbacks.onToggleMode()
         return
       }
 
