@@ -2,10 +2,14 @@ import { ReactNode } from 'react'
 
 interface ControlPanelProps {
   open: boolean
+  uiMode: 'simple' | 'pro'
+  onToggleMode: () => void
   children: ReactNode
 }
 
-export function ControlPanel({ open, children }: ControlPanelProps) {
+export function ControlPanel({ open, uiMode, onToggleMode, children }: ControlPanelProps) {
+  const modeColor = uiMode === 'simple' ? '#00E676' : '#FF1493'
+
   return (
     <>
       <style>{`
@@ -16,11 +20,11 @@ export function ControlPanel({ open, children }: ControlPanelProps) {
           background: transparent;
         }
         .hydra-panel::-webkit-scrollbar-thumb {
-          background: rgba(90, 40, 180, 0.3);
+          background: rgba(255, 20, 147, 0.3);
           border-radius: 2px;
         }
         .hydra-panel::-webkit-scrollbar-thumb:hover {
-          background: rgba(90, 40, 180, 0.5);
+          background: rgba(255, 20, 147, 0.5);
         }
       `}</style>
       <div
@@ -43,6 +47,20 @@ export function ControlPanel({ open, children }: ControlPanelProps) {
           fontFamily: 'sans-serif',
         }}
       >
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', marginBottom: '12px' }}>
+          <button
+            onClick={onToggleMode}
+            tabIndex={-1}
+            style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0' }}
+          >
+            <span style={{ fontSize: '9px', color: modeColor, textTransform: 'uppercase', letterSpacing: '1.5px', fontFamily: 'sans-serif' }}>
+              {uiMode}
+            </span>
+            <div style={{ width: '28px', height: '14px', borderRadius: '7px', backgroundColor: `${modeColor}44`, position: 'relative', transition: 'background-color 150ms' }}>
+              <div style={{ position: 'absolute', top: '2px', left: uiMode === 'simple' ? '2px' : '14px', width: '10px', height: '10px', borderRadius: '50%', backgroundColor: modeColor, transition: 'left 150ms' }} />
+            </div>
+          </button>
+        </div>
         {children}
       </div>
     </>
