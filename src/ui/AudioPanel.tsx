@@ -27,10 +27,11 @@ const SYNTH_OPTIONS = [
 ]
 
 const sectionHeaderStyle: React.CSSProperties = {
-  fontSize: '8px',
+  fontSize: '11px',
+  fontWeight: 600,
   textTransform: 'uppercase',
   letterSpacing: '2px',
-  color: 'rgba(90, 40, 180, 0.6)',
+  color: '#FFD700',
   fontFamily: 'sans-serif',
   margin: 0,
   cursor: 'pointer',
@@ -45,10 +46,10 @@ const rowStyle: React.CSSProperties = {
 }
 
 const subLabelStyle: React.CSSProperties = {
-  fontSize: '8px',
+  fontSize: '10px',
   textTransform: 'uppercase',
   letterSpacing: '1.5px',
-  color: 'rgba(90, 40, 180, 0.4)',
+  color: 'rgba(255, 215, 0, 0.7)',
   marginBottom: '4px',
   marginTop: '8px',
 }
@@ -83,6 +84,7 @@ export function AudioPanel({
             options={SYNTH_OPTIONS}
             value={synthType}
             onChange={onSynthTypeChange}
+            accentColor="#FFD700"
           />
 
           <p style={subLabelStyle}>Envelope</p>
@@ -93,6 +95,7 @@ export function AudioPanel({
             max={2}
             step={0.01}
             onChange={(v) => onSynthParamChange('attack', v)}
+            accentColor="#FFD700"
           />
           <Slider
             label="Decay"
@@ -101,6 +104,7 @@ export function AudioPanel({
             max={2}
             step={0.01}
             onChange={(v) => onSynthParamChange('decay', v)}
+            accentColor="#FFD700"
           />
           <Slider
             label="Sustain"
@@ -109,6 +113,7 @@ export function AudioPanel({
             max={1}
             step={0.01}
             onChange={(v) => onSynthParamChange('sustain', v)}
+            accentColor="#FFD700"
           />
           <Slider
             label="Release"
@@ -117,6 +122,7 @@ export function AudioPanel({
             max={4}
             step={0.01}
             onChange={(v) => onSynthParamChange('release', v)}
+            accentColor="#FFD700"
           />
 
           <p style={subLabelStyle}>Effects</p>
@@ -130,6 +136,7 @@ export function AudioPanel({
                   label={effect.type}
                   value={!effect.bypass}
                   onChange={() => onEffectToggle(i)}
+                  accentColor="#FFD700"
                 />
               </div>
               {!effect.bypass && (
@@ -140,6 +147,7 @@ export function AudioPanel({
                   max={1}
                   step={0.01}
                   onChange={(v) => onEffectWetChange(i, v)}
+                  accentColor="#FFD700"
                 />
               )}
             </div>
@@ -153,6 +161,7 @@ export function AudioPanel({
             max={200}
             step={1}
             onChange={onBpmChange}
+            accentColor="#FFD700"
           />
           <button
             onClick={onToggleSequencer}
@@ -162,8 +171,8 @@ export function AudioPanel({
               fontSize: '9px',
               textTransform: 'uppercase',
               letterSpacing: '1px',
-              backgroundColor: sequencerPlaying ? 'rgba(90,40,180,0.3)' : 'rgba(255,255,255,0.04)',
-              color: sequencerPlaying ? '#7c4ddb' : '#6a6a78',
+              backgroundColor: sequencerPlaying ? 'rgba(255,215,0,0.3)' : 'rgba(255,255,255,0.04)',
+              color: sequencerPlaying ? '#FFD700' : '#6a6a78',
               border: 'none',
               borderRadius: '3px',
               cursor: 'pointer',
@@ -175,7 +184,7 @@ export function AudioPanel({
           </button>
 
           <p style={subLabelStyle}>Input</p>
-          <Toggle label="Microphone" value={micEnabled} onChange={onToggleMic} />
+          <Toggle label="Microphone" value={micEnabled} onChange={onToggleMic} accentColor="#FFD700" />
         </div>
       )}
     </div>
