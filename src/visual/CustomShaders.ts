@@ -24,8 +24,15 @@ const sacredGeometry = {
     float pattern = ringPattern * petals + seedPattern * 0.4;
     float glow = smoothstep(0.5, 0.0, r) * 0.3;
     pattern += glow;
-    vec3 col = mix(vec3(0.15, 0.05, 0.3), vec3(0.9, 0.75, 0.3), pattern);
-    col += vec3(0.2, 0.1, 0.4) * seedPattern;
+    vec3 pink = vec3(1.0, 0.078, 0.576);
+    vec3 gold = vec3(1.0, 0.843, 0.0);
+    vec3 green = vec3(0.0, 0.902, 0.463);
+    vec3 blue = vec3(0.267, 0.533, 1.0);
+    vec3 ringCol = mix(pink, gold, ringPattern);
+    ringCol = mix(ringCol, green, petals * 0.5);
+    vec3 col = mix(vec3(0.03, 0.01, 0.05), ringCol, pattern);
+    col += blue * seedPattern * 0.6;
+    col += vec3(0.0, 0.749, 0.647) * glow;
     return vec4(col, 1.0);
   `,
 }
@@ -52,8 +59,15 @@ const tribalMask = {
     crown *= step(0.0, st.y);
     float innerGlow = exp(-r * 4.0) * glow;
     float mask = bands * 0.5 + eyes * 0.8 + crown * 0.6 + innerGlow;
-    vec3 col = mix(vec3(0.05, 0.02, 0.08), vec3(0.85, 0.75, 0.6), mask);
-    col += vec3(glow * 0.3, glow * 0.1, glow * 0.4) * innerGlow * 2.0;
+    vec3 teal = vec3(0.0, 0.749, 0.647);
+    vec3 green = vec3(0.0, 0.902, 0.463);
+    vec3 pink = vec3(1.0, 0.078, 0.576);
+    vec3 gold = vec3(1.0, 0.843, 0.0);
+    vec3 bandCol = mix(teal, green, bands);
+    vec3 col = mix(vec3(0.02, 0.02, 0.03), bandCol, mask * 0.7);
+    col += pink * eyes * 0.8;
+    col += gold * crown * 0.9;
+    col += vec3(1.0, 0.078, 0.576) * innerGlow * 1.5;
     return vec4(col, 1.0);
   `,
 }
@@ -101,6 +115,7 @@ const particleField = {
     vec2 iGrid = floor(grid);
     vec2 fGrid = fract(grid);
     float brightness = 0.0;
+    vec3 particleCol = vec3(0.0);
     for (float y = -1.0; y <= 1.0; y++) {
       for (float x = -1.0; x <= 1.0; x++) {
         vec2 neighbor = vec2(x, y);
@@ -120,13 +135,20 @@ const particleField = {
         float particle = smoothstep(pSize, pSize * 0.1, d);
         float twinkle = sin(time * 2.0 + h1 * 100.0) * 0.5 + 0.5;
         particle *= 0.5 + twinkle * 0.5;
+        float hue = fract(h1 * 3.0 + time * 0.05);
+        vec3 pCol = vec3(0.0);
+        if (hue < 0.166) pCol = vec3(1.0, 0.078, 0.576);
+        else if (hue < 0.333) pCol = vec3(1.0, 0.2, 0.2);
+        else if (hue < 0.5) pCol = vec3(1.0, 0.843, 0.0);
+        else if (hue < 0.666) pCol = vec3(0.0, 0.902, 0.463);
+        else if (hue < 0.833) pCol = vec3(0.0, 0.749, 0.647);
+        else pCol = vec3(0.267, 0.533, 1.0);
+        particleCol += pCol * particle;
         brightness += particle;
       }
     }
-    float warmth = fract(sin(dot(iGrid, vec2(127.1, 311.7))) * 43758.5453);
-    vec3 particleColor = mix(vec3(0.6, 0.7, 1.0), vec3(1.0, 0.8, 0.5), warmth);
-    col = particleColor * brightness;
-    col += vec3(0.02, 0.01, 0.04) * (1.0 - length(st - 0.5));
+    col = particleCol;
+    col += vec3(0.02, 0.01, 0.03) * (1.0 - length(st - 0.5));
     return vec4(col, 1.0);
   `,
 }
@@ -145,20 +167,29 @@ const voidPulse = {
     float a = atan(st.y, st.x);
     float breathPhase = time * rate;
     float ringWave = 0.0;
+    vec3 ringColor = vec3(0.0);
     for (float i = 0.0; i < 5.0; i++) {
       float ringR = fract(breathPhase * 0.2 + i * 0.2) * spread;
       float ringWidth = 0.01 + 0.02 * depth;
-      ringWave += smoothstep(ringWidth, 0.0, abs(r - ringR)) * (1.0 - fract(breathPhase * 0.2 + i * 0.2));
+      float ring = smoothstep(ringWidth, 0.0, abs(r - ringR)) * (1.0 - fract(breathPhase * 0.2 + i * 0.2));
+      ringWave += ring;
+      vec3 rCol = vec3(0.0);
+      if (i < 1.0) rCol = vec3(1.0, 0.078, 0.576);
+      else if (i < 2.0) rCol = vec3(1.0, 0.843, 0.0);
+      else if (i < 3.0) rCol = vec3(0.0, 0.902, 0.463);
+      else if (i < 4.0) rCol = vec3(0.267, 0.533, 1.0);
+      else rCol = vec3(1.0, 0.4, 0.0);
+      ringColor += rCol * ring;
     }
     float voidGlow = exp(-r * (4.0 + depth)) * 0.5;
     float angularNoise = sin(a * 6.0 + time * rate * 0.7) * 0.02 * depth;
     ringWave += smoothstep(0.01, 0.0, abs(r - 0.1 - angularNoise)) * 0.3;
     float tendril = sin(a * 3.0 + r * 10.0 - time * rate) * 0.5 + 0.5;
     tendril *= smoothstep(0.5, 0.1, r) * depth * 0.1;
-    float pattern = ringWave + voidGlow + tendril;
-    vec3 col = vec3(0.08, 0.02, 0.15) * (1.0 + pattern * 2.0);
-    col += vec3(0.3, 0.1, 0.5) * ringWave;
-    col += vec3(0.15, 0.05, 0.25) * voidGlow;
+    vec3 col = vec3(0.03, 0.02, 0.05) * (1.0 + (ringWave + voidGlow + tendril) * 1.5);
+    col += ringColor;
+    col += vec3(0.0, 0.749, 0.647) * voidGlow;
+    col += vec3(1.0, 0.078, 0.576) * tendril;
     return vec4(col, 1.0);
   `,
 }
@@ -187,12 +218,58 @@ const ritualFire = {
     float ember = smoothstep(0.02, 0.0, length(vec2(st.x - emberX * 0.3, emberY - 0.5)));
     ember *= step(0.7, fract(sin(floor(st.y * 3.0 - time * 1.5) * 41.0) * 43758.5453));
     vec3 col = vec3(0.0);
-    col += vec3(1.0, 0.9, 0.3) * flame * warmth;
-    col += vec3(1.0, 0.3, 0.05) * flame * (1.0 - warmth) * 2.0;
-    col += vec3(0.5, 0.05, 0.0) * flameMask * 0.3;
-    col += vec3(1.0, 0.6, 0.2) * ember * 0.5;
+    col += vec3(1.0, 0.843, 0.0) * flame * warmth;
+    col += vec3(1.0, 0.078, 0.576) * flame * (1.0 - warmth) * 2.0;
+    col += vec3(1.0, 0.4, 0.0) * flameMask * 0.4;
+    float emberPhase = fract(sin(floor(st.y * 3.0 - time * 1.5) * 23.0) * 43758.5453);
+    vec3 emberCol = emberPhase < 0.33 ? vec3(1.0, 0.843, 0.0)
+                  : emberPhase < 0.66 ? vec3(1.0, 0.078, 0.576)
+                  : vec3(0.0, 0.902, 0.463);
+    col += emberCol * ember * 0.7;
     float haze = smoothstep(0.6, 0.0, st.y) * 0.05 * turbulence;
-    col += vec3(0.2, 0.05, 0.0) * haze;
+    col += vec3(1.0, 0.4, 0.0) * haze;
+    return vec4(col, 1.0);
+  `,
+}
+
+const paisleyFlow = {
+  name: 'paisleyFlow',
+  type: 'src',
+  inputs: [
+    { type: 'float', name: 'density', default: 3 },
+    { type: 'float', name: 'speed', default: 0.5 },
+    { type: 'float', name: 'colorShift', default: 0 },
+  ],
+  glsl: `
+    vec2 st = _st;
+    float pattern = 0.0;
+    for (float i = 1.0; i <= 4.0; i++) {
+      float scale = density * i * 1.5;
+      vec2 p = st * scale;
+      float t = time * speed * (0.5 + i * 0.2);
+      p.x += sin(p.y * 2.0 + t) * 0.5;
+      p.y += cos(p.x * 1.5 - t * 0.7) * 0.4;
+      float a = atan(fract(p.y) - 0.5, fract(p.x) - 0.5);
+      float r = length(fract(p) - 0.5);
+      float tear = smoothstep(0.4, 0.1, r + sin(a * 2.0 + t) * 0.15);
+      float swirl = sin(a * 3.0 + r * 8.0 - t * 2.0) * 0.5 + 0.5;
+      tear *= swirl;
+      pattern += tear / i;
+    }
+    pattern = clamp(pattern, 0.0, 1.0);
+    float hue = fract(pattern * 1.5 + colorShift + time * speed * 0.05);
+    vec3 col = vec3(0.0);
+    float h = hue * 6.0;
+    if (h < 1.0) col = mix(vec3(1.0, 0.078, 0.576), vec3(1.0, 0.2, 0.2), h);
+    else if (h < 2.0) col = mix(vec3(1.0, 0.2, 0.2), vec3(1.0, 0.843, 0.0), h - 1.0);
+    else if (h < 3.0) col = mix(vec3(1.0, 0.843, 0.0), vec3(0.0, 0.902, 0.463), h - 2.0);
+    else if (h < 4.0) col = mix(vec3(0.0, 0.902, 0.463), vec3(0.0, 0.749, 0.647), h - 3.0);
+    else if (h < 5.0) col = mix(vec3(0.0, 0.749, 0.647), vec3(0.267, 0.533, 1.0), h - 4.0);
+    else col = mix(vec3(0.267, 0.533, 1.0), vec3(1.0, 0.078, 0.576), h - 5.0);
+    col *= pattern;
+    float outline = smoothstep(0.02, 0.0, abs(pattern - 0.5)) * 0.3;
+    col = mix(col, vec3(0.0), outline);
+    col += vec3(0.01, 0.005, 0.02) * (1.0 - pattern);
     return vec4(col, 1.0);
   `,
 }
@@ -206,4 +283,5 @@ export function registerCustomShaders(synth: Record<string, any>): void {
   setFn(particleField)
   setFn(voidPulse)
   setFn(ritualFire)
+  setFn(paisleyFlow)
 }
