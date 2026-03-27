@@ -2,19 +2,20 @@
 interface ToggleProps {
   label: string
   value: boolean
+  accentColor?: string
   onChange: (value: boolean) => void
 }
 
-export function Toggle({ label, value, onChange }: ToggleProps) {
+export function Toggle({ label, value, accentColor = '#FF1493', onChange }: ToggleProps) {
   return (
     <div className="flex items-center gap-2 w-full">
       <span
         className="shrink-0"
         style={{
-          fontSize: '10px',
+          fontSize: '11px',
           textTransform: 'uppercase',
           letterSpacing: '0.05em',
-          color: '#6a6a78',
+          color: '#cccccc',
           fontFamily: 'sans-serif',
           whiteSpace: 'nowrap',
         }}
@@ -32,7 +33,7 @@ export function Toggle({ label, value, onChange }: ToggleProps) {
           width: '32px',
           height: '16px',
           borderRadius: '9999px',
-          backgroundColor: value ? '#5a28b4' : 'rgba(255,255,255,0.10)',
+          backgroundColor: value ? accentColor : 'rgba(255,255,255,0.10)',
           border: 'none',
           cursor: 'pointer',
           padding: 0,
