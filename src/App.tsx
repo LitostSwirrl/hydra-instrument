@@ -16,6 +16,8 @@ import { PresetBar } from './ui/PresetBar'
 import { AudioPanel } from './ui/AudioPanel'
 import { VisualPanel } from './ui/VisualPanel'
 import { MappingPanel } from './ui/MappingPanel'
+import { SimplePanel } from './ui/SimplePanel'
+import { MacroEngine } from './ui/MacroEngine'
 
 // ---------- helpers for VisualPanel bridge ----------
 // VisualPanel works with named args (Record<string, number>), but HydraChainConfig
@@ -39,6 +41,7 @@ const SOURCE_ARG_KEYS: Record<string, string[]> = {
   particleField: ['density'],
   voidPulse: ['depth', 'rate'],
   ritualFire: ['turbulence', 'height'],
+  paisleyFlow: ['density', 'speed', 'colorShift'],
 }
 
 const TRANSFORM_ARG_KEYS: Record<string, string[]> = {
@@ -63,6 +66,14 @@ const TRANSFORM_ARG_DEFAULTS: Record<string, Record<string, number>> = {
   hue: { amount: 0 },
   brightness: { amount: 0 },
   modulate: { amount: 0.1 },
+}
+
+const VISUAL_GROUP_TO_SOURCE: Record<string, string> = {
+  Geometry: 'sacredGeometry',
+  Mask: 'tribalMask',
+  Fire: 'ritualFire',
+  Particles: 'particleField',
+  Flow: 'paisleyFlow',
 }
 
 function positionalToNamed(
@@ -134,6 +145,12 @@ export default function App() {
   const [visualSourceArgs, setVisualSourceArgs] = useState<Record<string, number>>({})
   const [visualTransforms, setVisualTransforms] = useState<VisualTransformUI[]>([])
 
+  const [macroTone, setMacroTone] = useState(0.5)
+  const [macroSpace, setMacroSpace] = useState(0.3)
+  const [macroIntensity, setMacroIntensity] = useState(0.5)
+  const [macroMorph, setMacroMorph] = useState(0)
+  const [visualGroup, setVisualGroup] = useState('Geometry')
+
   // Keep a ref to the current chain config for rebuilding
   const chainRef = useRef<HydraChainConfig>({
     source: { fn: 'osc', args: [60, 0.1, 0] },
@@ -149,6 +166,7 @@ export default function App() {
   const micEnabled = useAppStore((s) => s.micEnabled)
   const mappings = useAppStore((s) => s.mappings)
   const panelOpen = useAppStore((s) => s.ui.panelOpen)
+  const uiMode = useAppStore((s) => s.uiMode)
   const analysis = useAppStore((s) => s.analysis)
 
   // ---------- preset manager (singleton, no audio dependency) ----------
@@ -328,6 +346,9 @@ export default function App() {
       onNoteOn: (note, velocity) => audioEngine.noteOn(note, velocity),
       onNoteOff: (note) => audioEngine.noteOff(note),
       onPanic: () => audioEngine.panic(),
+      onToggleMode: () => {
+        useAppStore.getState().toggleUIMode()
+      },
       onLoadPreset: (slot) => {
         const preset = pm.loadPreset(slot)
         if (preset) {
@@ -497,6 +518,64 @@ export default function App() {
     state.setMicEnabled(!state.micEnabled)
   }, [])
 
+  const handleToggleMode = useCallback(() => {
+    useAppStore.getState().toggleUIMode()
+  }, [])
+
+  const handleToneChange = useCallback((value: number) => {
+    setMacroTone(value)
+    const params = MacroEngine.computeTone(value)
+    const store = useAppStore.getState()
+    store.setEffectParam(0, 'frequency', params.filterFrequency)
+    store.setEffectParam(0, 'Q', params.filterQ)
+    store.setSynthParams({ decay: params.decay })
+  }, [])
+
+  const handleSpaceChange = useCallback((value: number) => {
+    setMacroSpace(value)
+    const params = MacroEngine.computeSpace(value)
+    const store = useAppStore.getState()
+    store.setEffectBypass(1, params.reverbBypass)
+    store.setEffectWet(1, params.reverbWet)
+    store.setEffectBypass(2, params.delayBypass)
+    store.setEffectWet(2, params.delayWet)
+    store.setEffectParam(2, 'feedback', params.delayFeedback)
+  }, [])
+
+  const handleIntensityChange = useCallback((value: number) => {
+    setMacroIntensity(value)
+    const params = MacroEngine.computeIntensity(value, visualSource)
+    const key = MacroEngine.getSourcePrimaryKey(visualSource)
+    handleSourceArgChange(key, params.sourcePrimary)
+  }, [visualSource, handleSourceArgChange])
+
+  const handleMorphChange = useCallback((value: number) => {
+    setMacroMorph(value)
+    const params = MacroEngine.computeMorph(value)
+    setVisualTransforms((prev) => {
+      const next = [...prev]
+      const updateOrAdd = (fn: string, key: string, val: number) => {
+        const idx = next.findIndex((t) => t.fn === fn)
+        if (idx >= 0) {
+          next[idx] = { ...next[idx], args: { ...next[idx].args, [key]: val } }
+        } else if (val > 0.01) {
+          next.push({ fn, args: { [key]: val } })
+        }
+      }
+      updateOrAdd('hue', 'amount', params.hue)
+      updateOrAdd('colorama', 'amount', params.colorama)
+      updateOrAdd('rotate', 'angle', params.rotate)
+      rebuildChain(visualSource, visualSourceArgs, next)
+      return next
+    })
+  }, [visualSource, visualSourceArgs, rebuildChain])
+
+  const handleVisualGroupChange = useCallback((group: string) => {
+    setVisualGroup(group)
+    const source = VISUAL_GROUP_TO_SOURCE[group] ?? 'osc'
+    handleSourceChange(source)
+  }, [handleSourceChange])
+
   // ---------- MappingPanel callbacks ----------
   const handleAddMapping = useCallback(() => {
     const newMapping: Mapping = {
@@ -601,48 +680,76 @@ export default function App() {
             audioLevel={analysis.envelope}
             panelOpen={panelOpen}
             sequencerPlaying={sequencer.playing}
+            uiMode={uiMode}
+            onToggleMode={handleToggleMode}
           />
 
-          <ControlPanel open={panelOpen}>
-            <PresetBar
-              activeSlot={activeSlot}
-              slots={presetSlots}
-              onSelect={handlePresetSelect}
-              onExport={handleExport}
-              onImport={handleImport}
-              onCopyURL={handleCopyURL}
-            />
-            <AudioPanel
-              synthType={synthType}
-              onSynthTypeChange={handleSynthTypeChange}
-              synthParams={synthParams}
-              onSynthParamChange={handleSynthParamChange}
-              effects={effects.map((e) => ({ type: e.type, bypass: e.bypass, wet: e.wet }))}
-              onEffectToggle={handleEffectToggle}
-              onEffectWetChange={handleEffectWetChange}
-              bpm={sequencer.bpm}
-              onBpmChange={handleBpmChange}
-              sequencerPlaying={sequencer.playing}
-              onToggleSequencer={handleToggleSequencer}
-              micEnabled={micEnabled}
-              onToggleMic={handleToggleMic}
-            />
-            <VisualPanel
-              source={visualSource}
-              sourceArgs={visualSourceArgs}
-              onSourceChange={handleSourceChange}
-              onSourceArgChange={handleSourceArgChange}
-              transforms={visualTransforms}
-              onTransformArgChange={handleTransformArgChange}
-              onAddTransform={handleAddTransform}
-              onRemoveTransform={handleRemoveTransform}
-            />
-            <MappingPanel
-              mappings={mappings}
-              onAdd={handleAddMapping}
-              onRemove={handleRemoveMapping}
-              onUpdate={handleUpdateMapping}
-            />
+          <ControlPanel open={panelOpen} uiMode={uiMode} onToggleMode={handleToggleMode}>
+            {uiMode === 'simple' ? (
+              <SimplePanel
+                presetNames={presetSlots.map((name, i) => name ?? `Slot ${i + 1}`)}
+                activePresetIndex={activeSlot}
+                onPresetSelect={handlePresetSelect}
+                synthType={synthType}
+                onSynthTypeChange={handleSynthTypeChange}
+                tone={macroTone}
+                onToneChange={handleToneChange}
+                space={macroSpace}
+                onSpaceChange={handleSpaceChange}
+                visualGroup={visualGroup}
+                onVisualGroupChange={handleVisualGroupChange}
+                intensity={macroIntensity}
+                onIntensityChange={handleIntensityChange}
+                morph={macroMorph}
+                onMorphChange={handleMorphChange}
+                bpm={sequencer.bpm}
+                onBpmChange={handleBpmChange}
+                sequencerPlaying={sequencer.playing}
+                onToggleSequencer={handleToggleSequencer}
+              />
+            ) : (
+              <>
+                <PresetBar
+                  activeSlot={activeSlot}
+                  slots={presetSlots}
+                  onSelect={handlePresetSelect}
+                  onExport={handleExport}
+                  onImport={handleImport}
+                  onCopyURL={handleCopyURL}
+                />
+                <AudioPanel
+                  synthType={synthType}
+                  onSynthTypeChange={handleSynthTypeChange}
+                  synthParams={synthParams}
+                  onSynthParamChange={handleSynthParamChange}
+                  effects={effects.map((e) => ({ type: e.type, bypass: e.bypass, wet: e.wet }))}
+                  onEffectToggle={handleEffectToggle}
+                  onEffectWetChange={handleEffectWetChange}
+                  bpm={sequencer.bpm}
+                  onBpmChange={handleBpmChange}
+                  sequencerPlaying={sequencer.playing}
+                  onToggleSequencer={handleToggleSequencer}
+                  micEnabled={micEnabled}
+                  onToggleMic={handleToggleMic}
+                />
+                <VisualPanel
+                  source={visualSource}
+                  sourceArgs={visualSourceArgs}
+                  onSourceChange={handleSourceChange}
+                  onSourceArgChange={handleSourceArgChange}
+                  transforms={visualTransforms}
+                  onTransformArgChange={handleTransformArgChange}
+                  onAddTransform={handleAddTransform}
+                  onRemoveTransform={handleRemoveTransform}
+                />
+                <MappingPanel
+                  mappings={mappings}
+                  onAdd={handleAddMapping}
+                  onRemove={handleRemoveMapping}
+                  onUpdate={handleUpdateMapping}
+                />
+              </>
+            )}
           </ControlPanel>
         </>
       )}
