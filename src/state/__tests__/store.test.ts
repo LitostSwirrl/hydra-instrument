@@ -81,4 +81,23 @@ describe('store', () => {
     useAppStore.getState().setOctave(-1)
     expect(useAppStore.getState().octave).toBe(0)
   })
+
+  it('has default uiMode simple', () => {
+    expect(useAppStore.getState().uiMode).toBe('simple')
+  })
+
+  it('setUIMode changes mode', () => {
+    useAppStore.getState().setUIMode('pro')
+    expect(useAppStore.getState().uiMode).toBe('pro')
+    useAppStore.getState().setUIMode('simple')
+    expect(useAppStore.getState().uiMode).toBe('simple')
+  })
+
+  it('toggleUIMode flips mode', () => {
+    expect(useAppStore.getState().uiMode).toBe('simple')
+    useAppStore.getState().toggleUIMode()
+    expect(useAppStore.getState().uiMode).toBe('pro')
+    useAppStore.getState().toggleUIMode()
+    expect(useAppStore.getState().uiMode).toBe('simple')
+  })
 })

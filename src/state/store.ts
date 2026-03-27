@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { subscribeWithSelector } from 'zustand/middleware'
 
 export type SynthType = 'FMSynth' | 'AMSynth' | 'MembraneSynth' | 'MonoSynth'
+export type UIMode = 'simple' | 'pro'
 export type CurveType = 'linear' | 'exponential' | 'step'
 
 export interface EffectConfig {
@@ -83,6 +84,10 @@ export interface AppState {
   ui: UIState
   togglePanel: () => void
   setActiveSection: (section: UIState['activeSection']) => void
+
+  uiMode: UIMode
+  setUIMode: (mode: UIMode) => void
+  toggleUIMode: () => void
 }
 
 const defaultEffects: EffectConfig[] = [
@@ -122,6 +127,8 @@ const initialState = {
   sequencerStep: 0,
 
   ui: { panelOpen: false, activeSection: 'audio' as UIState['activeSection'] },
+
+  uiMode: 'simple' as UIMode,
 }
 
 export const useAppStore = create<AppState>()(
@@ -178,9 +185,12 @@ export const useAppStore = create<AppState>()(
 
     togglePanel: () => set((s) => ({ ui: { ...s.ui, panelOpen: !s.ui.panelOpen } })),
     setActiveSection: (section) => set((s) => ({ ui: { ...s.ui, activeSection: section } })),
+
+    setUIMode: (mode) => set({ uiMode: mode }),
+    toggleUIMode: () => set((s) => ({ uiMode: s.uiMode === 'simple' ? 'pro' : 'simple' })),
   }))
 )
 
 // expose getInitialState for test resets
 ;(useAppStore as unknown as { getInitialState: () => typeof initialState }).getInitialState =
-  () => ({ ...initialState, effects: defaultEffects.map((e) => ({ ...e, params: { ...e.params } })), analysis: { ...initialState.analysis, fftBands: new Array(8).fill(0) as number[] }, mappings: [], sequencer: { ...initialState.sequencer, pattern: [...initialState.sequencer.pattern] }, mouse: { ...initialState.mouse }, ui: { ...initialState.ui } })
+  () => ({ ...initialState, effects: defaultEffects.map((e) => ({ ...e, params: { ...e.params } })), analysis: { ...initialState.analysis, fftBands: new Array(8).fill(0) as number[] }, mappings: [], sequencer: { ...initialState.sequencer, pattern: [...initialState.sequencer.pattern] }, mouse: { ...initialState.mouse }, ui: { ...initialState.ui }, uiMode: 'simple' as UIMode })
