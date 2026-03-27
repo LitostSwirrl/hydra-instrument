@@ -423,6 +423,18 @@ export default function App() {
     }
   }, [])
 
+  // ---------- persist uiMode to localStorage ----------
+  useEffect(() => {
+    const saved = localStorage.getItem('hydra-instrument-mode')
+    if (saved === 'simple' || saved === 'pro') {
+      useAppStore.getState().setUIMode(saved)
+    }
+    return useAppStore.subscribe(
+      (s) => s.uiMode,
+      (mode) => localStorage.setItem('hydra-instrument-mode', mode)
+    )
+  }, [])
+
   // ---------- VisualPanel callbacks ----------
   const handleSourceChange = useCallback(
     (source: string) => {
