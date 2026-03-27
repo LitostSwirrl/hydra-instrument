@@ -32,7 +32,8 @@ export class AudioEngine {
   private createSynth(type: SynthType): void {
     if (this.synth) this.synth.dispose()
     const Voice = SYNTH_MAP[type]
-    this.synth = new Tone.PolySynth(Voice)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    this.synth = new Tone.PolySynth(Voice as any)
     this.synth.connect(this.effectsChain!.getInput())
   }
 

@@ -1,0 +1,67 @@
+<h2>Three Architectural Approaches</h2>
+<p class="subtitle">An open sandbox where sound and vision interplay -- solemn, futuristic, tribal</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Modular Patch Bay (Recommended)</h3>
+      <p>A node-graph interface where audio modules (oscillators, filters, effects, mic input) and visual modules (Hydra sources, transforms, custom shaders) are nodes you wire together. Every connection is bidirectional -- audio FFT feeds visual modulation, visual parameters feed audio synthesis. Users build patches by connecting nodes on a canvas.</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>Strengths</h4><ul>
+          <li>True "endless possibility" -- any signal can route anywhere</li>
+          <li>Visual metaphor matches analog modular synths (tribal/futuristic)</li>
+          <li>Natural save/share: patches are JSON graphs</li>
+          <li>Scales from simple (2 nodes) to complex (dozens)</li>
+        </ul></div>
+        <div class="cons"><h4>Risks</h4><ul>
+          <li>Most complex to build -- node editor is substantial UI work</li>
+          <li>Steeper learning curve for first-time users</li>
+          <li>Performance: many nodes = many real-time computations</li>
+        </ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Split-Pane Instrument</h3>
+      <p>Full-screen Hydra visual canvas with a collapsible control panel. The panel has sections: Audio Engine (Tone.js synths + mic input), Visual Engine (Hydra parameters + custom shaders), Mappings (which audio signals drive which visual params), and a keyboard/pad grid for playing. Parameters exposed as sliders, knobs, and XY pads.</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>Strengths</h4><ul>
+          <li>Simpler architecture -- no node graph needed</li>
+          <li>Immersive: visuals dominate the screen</li>
+          <li>Faster to build, faster to learn</li>
+          <li>Mapping system still gives deep control</li>
+        </ul></div>
+        <div class="cons"><h4>Risks</h4><ul>
+          <li>Mapping system is less discoverable than visual wiring</li>
+          <li>"Endless possibility" is more constrained -- predefined parameter slots</li>
+          <li>Adding new module types requires code changes</li>
+        </ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Live Code Arena</h3>
+      <p>A split-screen code editor: left side is Hydra visual code, right side is Tone.js audio code. Both execute live with Ctrl+Enter. A shared "bridge" object lets audio variables flow into visual code and vice versa. The canvas fills the background behind semi-transparent code panels. Presets load as editable code snippets.</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>Strengths</h4><ul>
+          <li>Maximum openness -- code IS the interface, anything is possible</li>
+          <li>Stays true to Hydra's livecoding DNA</li>
+          <li>Simplest architecture -- two code editors + eval</li>
+          <li>Presets are just code, easy to share</li>
+        </ul></div>
+        <div class="cons"><h4>Risks</h4><ul>
+          <li>Requires coding knowledge -- not accessible to non-coders</li>
+          <li>Less "instrument" feel, more "IDE" feel</li>
+          <li>Security: eval() in browser needs careful sandboxing</li>
+        </ul></div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,176 @@
+<h2>Visual Engine & Audio-Visual Mapping</h2>
+<p class="subtitle">Hydra core + custom GLSL shaders, driven by audio analysis and user interaction</p>
+
+<div class="mockup">
+  <div class="mockup-header">Visual Pipeline</div>
+  <div class="mockup-body" style="background:#0a0a0f;color:#e0e0e0;font-family:monospace;padding:24px;min-height:260px;">
+    <!-- Hydra chain visualization -->
+    <div style="display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;margin-bottom:24px;">
+      <div style="background:rgba(90,40,180,0.15);border:1px solid rgba(90,40,180,0.3);border-radius:4px;padding:8px 12px;text-align:center;">
+        <div style="font-size:8px;letter-spacing:1px;color:rgba(90,40,180,0.5);margin-bottom:2px;">SOURCE</div>
+        <div style="font-size:11px;color:#8a58d4;">osc / noise / voronoi / shape</div>
+      </div>
+      <span style="color:rgba(90,40,180,0.3);">&rarr;</span>
+      <div style="background:rgba(40,90,180,0.15);border:1px solid rgba(40,90,180,0.3);border-radius:4px;padding:8px 12px;text-align:center;">
+        <div style="font-size:8px;letter-spacing:1px;color:rgba(40,90,180,0.5);margin-bottom:2px;">GEOMETRY</div>
+        <div style="font-size:11px;color:#5888d4;">rotate / kaleid / scale / repeat</div>
+      </div>
+      <span style="color:rgba(90,40,180,0.3);">&rarr;</span>
+      <div style="background:rgba(180,40,90,0.15);border:1px solid rgba(180,40,90,0.3);border-radius:4px;padding:8px 12px;text-align:center;">
+        <div style="font-size:8px;letter-spacing:1px;color:rgba(180,40,90,0.5);margin-bottom:2px;">COLOR</div>
+        <div style="font-size:11px;color:#d45888;">colorama / hue / saturate / luma</div>
+      </div>
+      <span style="color:rgba(90,40,180,0.3);">&rarr;</span>
+      <div style="background:rgba(180,150,40,0.15);border:1px solid rgba(180,150,40,0.3);border-radius:4px;padding:8px 12px;text-align:center;">
+        <div style="font-size:8px;letter-spacing:1px;color:rgba(180,150,40,0.5);margin-bottom:2px;">MODULATE</div>
+        <div style="font-size:11px;color:#d4b838;">modulate / modulateRotate / feedback</div>
+      </div>
+      <span style="color:rgba(90,40,180,0.3);">&rarr;</span>
+      <div style="background:rgba(40,180,90,0.15);border:1px solid rgba(40,180,90,0.3);border-radius:4px;padding:8px 12px;text-align:center;">
+        <div style="font-size:8px;letter-spacing:1px;color:rgba(40,180,90,0.5);margin-bottom:2px;">BLEND</div>
+        <div style="font-size:11px;color:#58d488;">layer / add / mult / diff</div>
+      </div>
+      <span style="color:rgba(90,40,180,0.3);">&rarr;</span>
+      <div style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:4px;padding:8px 12px;text-align:center;">
+        <div style="font-size:8px;letter-spacing:1px;color:rgba(255,255,255,0.4);margin-bottom:2px;">OUTPUT</div>
+        <div style="font-size:11px;color:#ccc;">o0 / o1 / o2 / o3</div>
+      </div>
+    </div>
+
+    <!-- Custom shaders section -->
+    <div style="border-top:1px solid rgba(90,40,180,0.1);padding-top:16px;margin-bottom:16px;">
+      <div style="font-size:8px;letter-spacing:2px;color:rgba(90,40,180,0.5);margin-bottom:10px;">CUSTOM GLSL EXTENSIONS (tribal / futuristic aesthetic)</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <div style="background:rgba(90,40,180,0.08);border:1px solid rgba(90,40,180,0.12);border-radius:3px;padding:6px 10px;">
+          <div style="font-size:10px;color:#8a58d4;">sacredGeometry()</div>
+          <div style="font-size:8px;opacity:0.4;">Concentric rings, mandalas, flower-of-life patterns</div>
+        </div>
+        <div style="background:rgba(90,40,180,0.08);border:1px solid rgba(90,40,180,0.12);border-radius:3px;padding:6px 10px;">
+          <div style="font-size:10px;color:#8a58d4;">tribalMask()</div>
+          <div style="font-size:8px;opacity:0.4;">Symmetric face-like patterns, totemic geometry</div>
+        </div>
+        <div style="background:rgba(90,40,180,0.08);border:1px solid rgba(90,40,180,0.12);border-radius:3px;padding:6px 10px;">
+          <div style="font-size:10px;color:#8a58d4;">glitchScan()</div>
+          <div style="font-size:8px;opacity:0.4;">Horizontal scan lines, data corruption, VHS artifacts</div>
+        </div>
+        <div style="background:rgba(90,40,180,0.08);border:1px solid rgba(90,40,180,0.12);border-radius:3px;padding:6px 10px;">
+          <div style="font-size:10px;color:#8a58d4;">particleField()</div>
+          <div style="font-size:8px;opacity:0.4;">Floating dust motes, star fields, ember drifts</div>
+        </div>
+        <div style="background:rgba(90,40,180,0.08);border:1px solid rgba(90,40,180,0.12);border-radius:3px;padding:6px 10px;">
+          <div style="font-size:10px;color:#8a58d4;">voidPulse()</div>
+          <div style="font-size:8px;opacity:0.4;">Deep bass-reactive breathing, dark energy expansion</div>
+        </div>
+        <div style="background:rgba(90,40,180,0.08);border:1px solid rgba(90,40,180,0.12);border-radius:3px;padding:6px 10px;">
+          <div style="font-size:10px;color:#8a58d4;">ritualFire()</div>
+          <div style="font-size:8px;opacity:0.4;">Flame-like turbulence, ember trails, heat distortion</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="mockup" style="margin-top:16px;">
+  <div class="mockup-header">Audio-Visual Mapping System</div>
+  <div class="mockup-body" style="background:#0a0a0f;color:#e0e0e0;font-family:monospace;padding:20px;min-height:200px;">
+    <div style="font-size:8px;letter-spacing:2px;color:rgba(90,40,180,0.5);margin-bottom:12px;">MAPPING RULES: audio signal &rarr; visual parameter</div>
+
+    <div style="display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:6px;align-items:center;margin-bottom:16px;">
+      <!-- Row 1 -->
+      <div style="background:rgba(180,40,90,0.1);border:1px solid rgba(180,40,90,0.15);border-radius:3px;padding:6px 8px;font-size:9px;text-align:center;">
+        <div style="color:#d45888;">fft[0]</div><div style="font-size:7px;opacity:0.4;">bass energy</div>
+      </div>
+      <span style="color:rgba(90,40,180,0.3);font-size:12px;">&rarr;</span>
+      <div style="background:rgba(90,40,180,0.08);border:1px solid rgba(90,40,180,0.12);border-radius:3px;padding:4px 6px;font-size:8px;text-align:center;">
+        <div style="opacity:0.4;">range: 0.5 &ndash; 2.0</div>
+        <div style="opacity:0.4;">smooth: 0.8</div>
+      </div>
+      <span style="color:rgba(90,40,180,0.3);font-size:12px;">&rarr;</span>
+      <div style="background:rgba(40,180,90,0.1);border:1px solid rgba(40,180,90,0.15);border-radius:3px;padding:6px 8px;font-size:9px;text-align:center;">
+        <div style="color:#58d488;">osc.frequency</div><div style="font-size:7px;opacity:0.4;">visual density</div>
+      </div>
+
+      <!-- Row 2 -->
+      <div style="background:rgba(180,40,90,0.1);border:1px solid rgba(180,40,90,0.15);border-radius:3px;padding:6px 8px;font-size:9px;text-align:center;">
+        <div style="color:#d45888;">fft[3]</div><div style="font-size:7px;opacity:0.4;">high freq energy</div>
+      </div>
+      <span style="color:rgba(90,40,180,0.3);font-size:12px;">&rarr;</span>
+      <div style="background:rgba(90,40,180,0.08);border:1px solid rgba(90,40,180,0.12);border-radius:3px;padding:4px 6px;font-size:8px;text-align:center;">
+        <div style="opacity:0.4;">range: 0.0 &ndash; 0.5</div>
+        <div style="opacity:0.4;">smooth: 0.3</div>
+      </div>
+      <span style="color:rgba(90,40,180,0.3);font-size:12px;">&rarr;</span>
+      <div style="background:rgba(40,180,90,0.1);border:1px solid rgba(40,180,90,0.15);border-radius:3px;padding:6px 8px;font-size:9px;text-align:center;">
+        <div style="color:#58d488;">colorama.amount</div><div style="font-size:7px;opacity:0.4;">color cycling</div>
+      </div>
+
+      <!-- Row 3 -->
+      <div style="background:rgba(180,40,90,0.1);border:1px solid rgba(180,40,90,0.15);border-radius:3px;padding:6px 8px;font-size:9px;text-align:center;">
+        <div style="color:#d45888;">envelope</div><div style="font-size:7px;opacity:0.4;">overall loudness</div>
+      </div>
+      <span style="color:rgba(90,40,180,0.3);font-size:12px;">&rarr;</span>
+      <div style="background:rgba(90,40,180,0.08);border:1px solid rgba(90,40,180,0.12);border-radius:3px;padding:4px 6px;font-size:8px;text-align:center;">
+        <div style="opacity:0.4;">range: 0.95 &ndash; 1.05</div>
+        <div style="opacity:0.4;">smooth: 0.9</div>
+      </div>
+      <span style="color:rgba(90,40,180,0.3);font-size:12px;">&rarr;</span>
+      <div style="background:rgba(40,180,90,0.1);border:1px solid rgba(40,180,90,0.15);border-radius:3px;padding:6px 8px;font-size:9px;text-align:center;">
+        <div style="color:#58d488;">scale.amount</div><div style="font-size:7px;opacity:0.4;">breathing / pulse</div>
+      </div>
+
+      <!-- Row 4 -->
+      <div style="background:rgba(180,150,40,0.1);border:1px solid rgba(180,150,40,0.15);border-radius:3px;padding:6px 8px;font-size:9px;text-align:center;">
+        <div style="color:#d4b838;">mouse.x</div><div style="font-size:7px;opacity:0.4;">horizontal position</div>
+      </div>
+      <span style="color:rgba(90,40,180,0.3);font-size:12px;">&rarr;</span>
+      <div style="background:rgba(90,40,180,0.08);border:1px solid rgba(90,40,180,0.12);border-radius:3px;padding:4px 6px;font-size:8px;text-align:center;">
+        <div style="opacity:0.4;">range: 0.0 &ndash; 6.28</div>
+        <div style="opacity:0.4;">smooth: 0.5</div>
+      </div>
+      <span style="color:rgba(90,40,180,0.3);font-size:12px;">&rarr;</span>
+      <div style="background:rgba(40,180,90,0.1);border:1px solid rgba(40,180,90,0.15);border-radius:3px;padding:6px 8px;font-size:9px;text-align:center;">
+        <div style="color:#58d488;">rotate.angle</div><div style="font-size:7px;opacity:0.4;">spatial rotation</div>
+      </div>
+    </div>
+
+    <div style="border-top:1px solid rgba(90,40,180,0.1);padding-top:12px;">
+      <div style="font-size:8px;letter-spacing:2px;color:rgba(90,40,180,0.5);margin-bottom:8px;">EACH MAPPING HAS</div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;font-size:9px;">
+        <div><span style="color:#8a58d4;">source</span> <span style="opacity:0.3;">-- what drives it (fft band, envelope, mouse, note velocity)</span></div>
+        <div><span style="color:#8a58d4;">target</span> <span style="opacity:0.3;">-- which Hydra param it controls</span></div>
+        <div><span style="color:#8a58d4;">range</span> <span style="opacity:0.3;">-- min/max output values</span></div>
+        <div><span style="color:#8a58d4;">smooth</span> <span style="opacity:0.3;">-- interpolation factor (0=instant, 1=glacial)</span></div>
+        <div><span style="color:#8a58d4;">curve</span> <span style="opacity:0.3;">-- linear, exponential, or step</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:20px;">
+  <h3>Design Decisions</h3>
+  <ul>
+    <li><strong>Hydra runs as embedded engine</strong> via hydra-synth npm package -- not an iframe, direct API access</li>
+    <li><strong>Custom shaders</strong> registered via <code>setFunction()</code> at startup -- sacredGeometry, tribalMask, glitchScan, particleField, voidPulse, ritualFire</li>
+    <li><strong>4 output buffers</strong> (o0-o3) available -- user can build layered compositions with blend/feedback between buffers</li>
+    <li><strong>Mapping system</strong> is the bridge -- any audio signal (fft band, envelope, note velocity, mouse position) can drive any Hydra parameter through a configurable range/smooth/curve</li>
+    <li><strong>Users create/delete/edit mappings</strong> freely in the Mappings panel section -- this is where "endless possibility" lives</li>
+    <li><strong>Presets</strong> save the entire state: synth type, effects, visual chain, all mappings. Exportable as JSON</li>
+  </ul>
+</div>
+
+<div class="options" style="margin-top:16px;">
+  <div class="option" data-choice="approve" onclick="toggleSelect(this)">
+    <div class="letter" style="background:rgba(90,40,180,0.2);color:#5a28b4;">&#10003;</div>
+    <div class="content">
+      <h3>Visual engine and mapping look good</h3>
+      <p>Move to interaction design and presets</p>
+    </div>
+  </div>
+  <div class="option" data-choice="revise" onclick="toggleSelect(this)">
+    <div class="letter" style="background:rgba(180,40,40,0.2);color:#b44028;">&#9998;</div>
+    <div class="content">
+      <h3>Needs changes</h3>
+      <p>I'll describe adjustments in terminal</p>
+    </div>
+  </div>
+</div>
