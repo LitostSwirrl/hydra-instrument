@@ -9,10 +9,11 @@ interface DropdownProps {
   label: string
   options: DropdownOption[]
   value: string
+  accentColor?: string
   onChange: (value: string) => void
 }
 
-export function Dropdown({ label, options, value, onChange }: DropdownProps) {
+export function Dropdown({ label, options, value, accentColor = '#FF1493', onChange }: DropdownProps) {
   const [open, setOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -45,10 +46,10 @@ export function Dropdown({ label, options, value, onChange }: DropdownProps) {
       <span
         className="shrink-0"
         style={{
-          fontSize: '10px',
+          fontSize: '11px',
           textTransform: 'uppercase',
           letterSpacing: '0.05em',
-          color: '#6a6a78',
+          color: '#cccccc',
           fontFamily: 'sans-serif',
           whiteSpace: 'nowrap',
         }}
@@ -73,7 +74,7 @@ export function Dropdown({ label, options, value, onChange }: DropdownProps) {
             border: 'none',
             borderRadius: '3px',
             cursor: 'pointer',
-            color: '#7c4ddb',
+            color: accentColor,
             fontSize: '12px',
             fontFamily: 'monospace',
             transition: 'background-color 150ms',
@@ -88,7 +89,7 @@ export function Dropdown({ label, options, value, onChange }: DropdownProps) {
           }}
         >
           <span>{selected?.label ?? value}</span>
-          <span style={{ marginLeft: '6px', fontSize: '10px', color: '#6a6a78' }}>
+          <span style={{ marginLeft: '6px', fontSize: '10px', color: '#999999' }}>
             {open ? '\u25b2' : '\u25bc'}
           </span>
         </button>
@@ -123,8 +124,8 @@ export function Dropdown({ label, options, value, onChange }: DropdownProps) {
                   padding: '4px 8px',
                   border: 'none',
                   backgroundColor:
-                    option.value === value ? 'rgba(90,40,180,0.15)' : 'transparent',
-                  color: option.value === value ? '#7c4ddb' : '#c8c8d0',
+                    option.value === value ? `${accentColor}22` : 'transparent',
+                  color: option.value === value ? accentColor : '#cccccc',
                   fontSize: '12px',
                   fontFamily: 'monospace',
                   cursor: 'pointer',
@@ -136,7 +137,7 @@ export function Dropdown({ label, options, value, onChange }: DropdownProps) {
                 }}
                 onMouseLeave={(e) => {
                   ;(e.currentTarget as HTMLButtonElement).style.backgroundColor =
-                    option.value === value ? 'rgba(90,40,180,0.15)' : 'transparent'
+                    option.value === value ? `${accentColor}22` : 'transparent'
                 }}
               >
                 {option.label}
