@@ -1,0 +1,92 @@
+<h2>Layout & Structure</h2>
+<p class="subtitle">Split-pane instrument: immersive visuals + collapsible control surface</p>
+
+<div class="split">
+  <div class="mockup">
+    <div class="mockup-header">Default View -- Immersive</div>
+    <div class="mockup-body" style="background:#0a0a0f;color:#e0e0e0;font-family:monospace;min-height:320px;position:relative;overflow:hidden;">
+      <!-- Simulated Hydra canvas -->
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+        <div style="width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,#1a0a2e,#0d0d1a 40%,#000 70%);box-shadow:0 0 80px rgba(90,40,180,0.3),0 0 160px rgba(30,10,60,0.2);"></div>
+        <div style="position:absolute;width:260px;height:260px;border:1px solid rgba(90,40,180,0.15);border-radius:50%;"></div>
+        <div style="position:absolute;width:340px;height:340px;border:1px solid rgba(90,40,180,0.08);border-radius:50%;"></div>
+      </div>
+      <!-- Minimal HUD -->
+      <div style="position:absolute;top:12px;left:16px;font-size:10px;opacity:0.3;letter-spacing:2px;">HYDRA</div>
+      <div style="position:absolute;top:12px;right:16px;font-size:10px;opacity:0.3;">BPM 120 | FFT 4</div>
+      <div style="position:absolute;bottom:12px;left:16px;font-size:10px;opacity:0.3;">PRESET: void</div>
+      <div style="position:absolute;bottom:12px;right:16px;font-size:10px;opacity:0.25;letter-spacing:1px;">TAB to open controls</div>
+    </div>
+  </div>
+
+  <div class="mockup">
+    <div class="mockup-header">Controls Open -- Split Pane</div>
+    <div class="mockup-body" style="background:#0a0a0f;color:#e0e0e0;font-family:monospace;min-height:320px;display:flex;">
+      <!-- Left: Hydra canvas (shrunk) -->
+      <div style="flex:1;position:relative;border-right:1px solid rgba(90,40,180,0.2);">
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+          <div style="width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,#1a0a2e,#0d0d1a 40%,#000 70%);box-shadow:0 0 40px rgba(90,40,180,0.3);"></div>
+        </div>
+        <div style="position:absolute;top:8px;left:8px;font-size:9px;opacity:0.3;">HYDRA</div>
+      </div>
+      <!-- Right: Control panel -->
+      <div style="width:220px;background:#0d0d14;padding:10px;font-size:9px;overflow-y:auto;">
+        <div style="color:rgba(90,40,180,0.6);letter-spacing:2px;margin-bottom:8px;font-size:8px;">AUDIO ENGINE</div>
+        <div style="margin-bottom:4px;display:flex;justify-content:space-between;"><span style="opacity:0.5;">synth</span><span style="color:#5a28b4;">fm</span></div>
+        <div style="margin-bottom:4px;display:flex;justify-content:space-between;"><span style="opacity:0.5;">freq</span><span style="color:#5a28b4;">220 Hz</span></div>
+        <div style="height:3px;background:#1a1a2e;border-radius:2px;margin-bottom:8px;"><div style="width:35%;height:100%;background:#5a28b4;border-radius:2px;"></div></div>
+        <div style="margin-bottom:4px;display:flex;justify-content:space-between;"><span style="opacity:0.5;">reverb</span><span style="color:#5a28b4;">0.6</span></div>
+        <div style="height:3px;background:#1a1a2e;border-radius:2px;margin-bottom:12px;"><div style="width:60%;height:100%;background:#5a28b4;border-radius:2px;"></div></div>
+
+        <div style="color:rgba(90,40,180,0.6);letter-spacing:2px;margin-bottom:8px;font-size:8px;">VISUAL ENGINE</div>
+        <div style="margin-bottom:4px;display:flex;justify-content:space-between;"><span style="opacity:0.5;">source</span><span style="color:#5a28b4;">osc</span></div>
+        <div style="margin-bottom:4px;display:flex;justify-content:space-between;"><span style="opacity:0.5;">freq</span><span style="color:#5a28b4;">20</span></div>
+        <div style="height:3px;background:#1a1a2e;border-radius:2px;margin-bottom:8px;"><div style="width:45%;height:100%;background:#5a28b4;border-radius:2px;"></div></div>
+        <div style="margin-bottom:4px;display:flex;justify-content:space-between;"><span style="opacity:0.5;">kaleid</span><span style="color:#5a28b4;">6</span></div>
+        <div style="height:3px;background:#1a1a2e;border-radius:2px;margin-bottom:12px;"><div style="width:50%;height:100%;background:#5a28b4;border-radius:2px;"></div></div>
+
+        <div style="color:rgba(90,40,180,0.6);letter-spacing:2px;margin-bottom:8px;font-size:8px;">MAPPINGS</div>
+        <div style="padding:4px 6px;background:rgba(90,40,180,0.1);border:1px solid rgba(90,40,180,0.15);border-radius:3px;margin-bottom:4px;font-size:8px;">
+          fft[0] &rarr; osc.freq
+        </div>
+        <div style="padding:4px 6px;background:rgba(90,40,180,0.1);border:1px solid rgba(90,40,180,0.15);border-radius:3px;margin-bottom:4px;font-size:8px;">
+          fft[2] &rarr; kaleid.sides
+        </div>
+        <div style="padding:4px 6px;background:rgba(90,40,180,0.1);border:1px solid rgba(90,40,180,0.15);border-radius:3px;font-size:8px;opacity:0.4;cursor:pointer;">
+          + add mapping
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:24px;">
+  <h3>Layout Principles</h3>
+  <ul>
+    <li><strong>Full-screen Hydra canvas</strong> as the primary experience -- visuals are everything</li>
+    <li><strong>Tab key</strong> toggles the control panel (slides in from right)</li>
+    <li><strong>Minimal HUD</strong> overlay when controls are hidden: BPM, current preset name, audio level</li>
+    <li><strong>Dark, borderless aesthetic</strong> -- the UI melts into the visuals</li>
+    <li><strong>Three panel sections</strong>: Audio Engine, Visual Engine, Mappings</li>
+    <li><strong>Keyboard always active</strong> for playing notes regardless of panel state</li>
+  </ul>
+</div>
+
+<p class="subtitle" style="margin-top:16px;">Does this layout structure feel right? Click to confirm or respond in terminal with changes.</p>
+
+<div class="options">
+  <div class="option" data-choice="approve" onclick="toggleSelect(this)">
+    <div class="letter" style="background:rgba(90,40,180,0.2);color:#5a28b4;">&#10003;</div>
+    <div class="content">
+      <h3>This feels right</h3>
+      <p>Proceed to audio architecture</p>
+    </div>
+  </div>
+  <div class="option" data-choice="revise" onclick="toggleSelect(this)">
+    <div class="letter" style="background:rgba(180,40,40,0.2);color:#b44028;">&#9998;</div>
+    <div class="content">
+      <h3>Needs changes</h3>
+      <p>I'll describe what to adjust in the terminal</p>
+    </div>
+  </div>
+</div>

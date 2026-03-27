@@ -1,0 +1,111 @@
+<h2>Audio Architecture</h2>
+<p class="subtitle">Three audio sources, unified through Tone.js, feeding both speakers and visual engine</p>
+
+<div class="mockup">
+  <div class="mockup-header">Signal Flow</div>
+  <div class="mockup-body" style="background:#0a0a0f;color:#e0e0e0;font-family:monospace;padding:24px;min-height:300px;">
+    <div style="display:flex;gap:16px;justify-content:center;margin-bottom:24px;">
+      <!-- Three input sources -->
+      <div style="text-align:center;">
+        <div style="background:rgba(90,40,180,0.15);border:1px solid rgba(90,40,180,0.3);border-radius:6px;padding:12px 16px;min-width:120px;">
+          <div style="font-size:8px;letter-spacing:2px;color:rgba(90,40,180,0.6);margin-bottom:4px;">SOURCE 1</div>
+          <div style="font-size:13px;color:#8a58d4;">Keyboard Synth</div>
+          <div style="font-size:9px;opacity:0.4;margin-top:4px;">Tone.js PolySynth</div>
+          <div style="font-size:9px;opacity:0.4;">FM / AM / Membrane</div>
+        </div>
+        <div style="color:rgba(90,40,180,0.3);font-size:18px;">|</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="background:rgba(40,90,180,0.15);border:1px solid rgba(40,90,180,0.3);border-radius:6px;padding:12px 16px;min-width:120px;">
+          <div style="font-size:8px;letter-spacing:2px;color:rgba(40,90,180,0.6);margin-bottom:4px;">SOURCE 2</div>
+          <div style="font-size:13px;color:#5888d4;">Sequencer</div>
+          <div style="font-size:9px;opacity:0.4;margin-top:4px;">Tone.js Transport</div>
+          <div style="font-size:9px;opacity:0.4;">Pattern / Loop / Seq</div>
+        </div>
+        <div style="color:rgba(40,90,180,0.3);font-size:18px;">|</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="background:rgba(180,90,40,0.15);border:1px solid rgba(180,90,40,0.3);border-radius:6px;padding:12px 16px;min-width:120px;">
+          <div style="font-size:8px;letter-spacing:2px;color:rgba(180,90,40,0.6);margin-bottom:4px;">SOURCE 3</div>
+          <div style="font-size:13px;color:#d49858;">Mic / Line In</div>
+          <div style="font-size:9px;opacity:0.4;margin-top:4px;">Web Audio getUserMedia</div>
+          <div style="font-size:9px;opacity:0.4;">System audio capture</div>
+        </div>
+        <div style="color:rgba(180,90,40,0.3);font-size:18px;">|</div>
+      </div>
+    </div>
+
+    <!-- Effects chain -->
+    <div style="display:flex;justify-content:center;margin-bottom:8px;">
+      <div style="display:flex;gap:2px;align-items:center;">
+        <div style="color:rgba(90,40,180,0.3);font-size:14px;">&#9660; &#9660; &#9660;</div>
+      </div>
+    </div>
+    <div style="max-width:420px;margin:0 auto 24px auto;background:rgba(90,40,180,0.08);border:1px solid rgba(90,40,180,0.15);border-radius:6px;padding:12px 16px;text-align:center;">
+      <div style="font-size:8px;letter-spacing:2px;color:rgba(90,40,180,0.6);margin-bottom:6px;">EFFECTS CHAIN</div>
+      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+        <span style="background:rgba(90,40,180,0.12);padding:3px 8px;border-radius:3px;font-size:9px;border:1px solid rgba(90,40,180,0.15);">Filter</span>
+        <span style="font-size:9px;opacity:0.3;">&rarr;</span>
+        <span style="background:rgba(90,40,180,0.12);padding:3px 8px;border-radius:3px;font-size:9px;border:1px solid rgba(90,40,180,0.15);">Reverb</span>
+        <span style="font-size:9px;opacity:0.3;">&rarr;</span>
+        <span style="background:rgba(90,40,180,0.12);padding:3px 8px;border-radius:3px;font-size:9px;border:1px solid rgba(90,40,180,0.15);">Delay</span>
+        <span style="font-size:9px;opacity:0.3;">&rarr;</span>
+        <span style="background:rgba(90,40,180,0.12);padding:3px 8px;border-radius:3px;font-size:9px;border:1px solid rgba(90,40,180,0.15);">Distortion</span>
+        <span style="font-size:9px;opacity:0.3;">&rarr;</span>
+        <span style="background:rgba(90,40,180,0.12);padding:3px 8px;border-radius:3px;font-size:9px;border:1px solid rgba(90,40,180,0.15);">Compressor</span>
+      </div>
+      <div style="font-size:8px;opacity:0.3;margin-top:6px;">user-configurable order and params</div>
+    </div>
+
+    <!-- Split output -->
+    <div style="display:flex;justify-content:center;margin-bottom:8px;">
+      <div style="color:rgba(90,40,180,0.3);font-size:14px;">&#9660;</div>
+    </div>
+    <div style="display:flex;gap:24px;justify-content:center;">
+      <div style="background:rgba(40,180,90,0.1);border:1px solid rgba(40,180,90,0.2);border-radius:6px;padding:12px 20px;text-align:center;">
+        <div style="font-size:8px;letter-spacing:2px;color:rgba(40,180,90,0.6);margin-bottom:4px;">OUTPUT</div>
+        <div style="font-size:13px;color:#58d488;">Speakers</div>
+        <div style="font-size:9px;opacity:0.4;margin-top:2px;">Tone.Destination</div>
+      </div>
+      <div style="background:rgba(180,40,90,0.1);border:1px solid rgba(180,40,90,0.2);border-radius:6px;padding:12px 20px;text-align:center;">
+        <div style="font-size:8px;letter-spacing:2px;color:rgba(180,40,90,0.6);margin-bottom:4px;">ANALYSIS</div>
+        <div style="font-size:13px;color:#d45888;">FFT Analyser</div>
+        <div style="font-size:9px;opacity:0.4;margin-top:2px;">4-16 bands &rarr; Hydra</div>
+      </div>
+      <div style="background:rgba(180,150,40,0.1);border:1px solid rgba(180,150,40,0.2);border-radius:6px;padding:12px 20px;text-align:center;">
+        <div style="font-size:8px;letter-spacing:2px;color:rgba(180,150,40,0.6);margin-bottom:4px;">ANALYSIS</div>
+        <div style="font-size:13px;color:#d4b838;">Waveform</div>
+        <div style="font-size:9px;opacity:0.4;margin-top:2px;">Envelope follower &rarr; Hydra</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:20px;">
+  <h3>Key Decisions</h3>
+  <ul>
+    <li><strong>Tone.js PolySynth</strong> as keyboard instrument -- switchable between FM, AM, Membrane, and custom synth types. Polyphonic (play chords)</li>
+    <li><strong>Step sequencer</strong> using Tone.Transport -- pattern-based, programmable beats and melodies that loop. BPM-synced</li>
+    <li><strong>Mic/line input</strong> via getUserMedia -- can also capture system audio (browser-dependent). Feeds through same effects chain</li>
+    <li><strong>Effects are shared</strong> -- all three sources mix into one effects chain. Each effect is toggle-able with wet/dry control</li>
+    <li><strong>Dual analysis</strong> -- FFT bands (configurable 4-16) and waveform/envelope follower both feed into Hydra as reactive parameters</li>
+    <li><strong>Keyboard mapping</strong>: ASDF row = lower octave, QWERTY row = upper octave. Z/X shift octave down/up</li>
+  </ul>
+</div>
+
+<div class="options" style="margin-top:16px;">
+  <div class="option" data-choice="approve" onclick="toggleSelect(this)">
+    <div class="letter" style="background:rgba(90,40,180,0.2);color:#5a28b4;">&#10003;</div>
+    <div class="content">
+      <h3>Audio architecture looks good</h3>
+      <p>Move to visual engine design</p>
+    </div>
+  </div>
+  <div class="option" data-choice="revise" onclick="toggleSelect(this)">
+    <div class="letter" style="background:rgba(180,40,40,0.2);color:#b44028;">&#9998;</div>
+    <div class="content">
+      <h3>Needs changes</h3>
+      <p>I'll describe adjustments in terminal</p>
+    </div>
+  </div>
+</div>
