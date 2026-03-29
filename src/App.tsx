@@ -37,12 +37,13 @@ const SOURCE_ARG_KEYS: Record<string, string[]> = {
   shape: ['sides', 'radius', 'smoothing'],
   gradient: ['speed'],
   solid: ['r', 'g', 'b'],
-  sacredGeometry: ['pulse', 'rings'],
-  tribalMask: ['symmetry', 'glow'],
-  particleField: ['density'],
-  voidPulse: ['depth', 'rate'],
-  ritualFire: ['turbulence', 'height'],
-  paisleyFlow: ['density', 'speed', 'colorShift'],
+  drift: ['speed', 'density', 'amplitude'],
+  dendrite: ['branches', 'depth', 'pulse'],
+  web: ['connections', 'tension', 'breathe'],
+  pulse: ['rings', 'speed', 'deform'],
+  spore: ['count', 'drift', 'trail'],
+  weave: ['layers', 'frequency', 'phase'],
+  mycelium: ['growth', 'branching', 'thickness'],
 }
 
 const TRANSFORM_ARG_KEYS: Record<string, string[]> = {
@@ -55,7 +56,6 @@ const TRANSFORM_ARG_KEYS: Record<string, string[]> = {
   brightness: ['amount'],
   modulate: ['amount'],
   color: ['r', 'g', 'b'],
-  glitchScan: ['amount'],
 }
 
 const TRANSFORM_ARG_DEFAULTS: Record<string, Record<string, number>> = {
@@ -70,11 +70,11 @@ const TRANSFORM_ARG_DEFAULTS: Record<string, Record<string, number>> = {
 }
 
 const VISUAL_GROUP_TO_SOURCE: Record<string, string> = {
-  Geometry: 'sacredGeometry',
-  Mask: 'tribalMask',
-  Fire: 'ritualFire',
-  Particles: 'particleField',
-  Flow: 'paisleyFlow',
+  Geometry: 'dendrite',
+  Mask: 'weave',
+  Fire: 'pulse',
+  Particles: 'spore',
+  Flow: 'mycelium',
 }
 
 function positionalToNamed(
