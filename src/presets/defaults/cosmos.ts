@@ -23,10 +23,11 @@ export const cosmosPreset: Preset = {
   },
   visual: {
     chain: {
-      source: { fn: 'particleField', args: ['particleField.density', 0.3, 0.5] },
+      source: { fn: 'particleField', args: [50, 0.3, 2] },
       transforms: [
         { fn: 'rotate', args: ['rotate.angle', 0.3] },
         { fn: 'scale', args: [1.002] },
+        { fn: 'brightness', args: [0.1] },
       ],
       output: 'o0',
     },

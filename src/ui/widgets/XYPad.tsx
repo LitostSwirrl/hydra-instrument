@@ -122,7 +122,7 @@ export function XYPad({ label, valueX, valueY, onChange }: XYPadProps) {
             bottom: 0,
             left: `${valueX * 100}%`,
             width: '1px',
-            backgroundColor: 'rgba(90,40,180,0.40)',
+            backgroundColor: 'rgba(176,184,196,0.40)',
             transform: 'translateX(-50%)',
             pointerEvents: 'none',
           }}
@@ -136,7 +136,7 @@ export function XYPad({ label, valueX, valueY, onChange }: XYPadProps) {
             right: 0,
             top: `${valueY * 100}%`,
             height: '1px',
-            backgroundColor: 'rgba(90,40,180,0.40)',
+            backgroundColor: 'rgba(176,184,196,0.40)',
             transform: 'translateY(-50%)',
             pointerEvents: 'none',
           }}
@@ -151,9 +151,9 @@ export function XYPad({ label, valueX, valueY, onChange }: XYPadProps) {
             width: '6px',
             height: '6px',
             borderRadius: '50%',
-            backgroundColor: '#7c4ddb',
+            backgroundColor: '#B0B8C4',
             transform: 'translate(-50%, -50%)',
-            boxShadow: '0 0 6px rgba(90,40,180,0.8)',
+            boxShadow: '0 0 6px rgba(176,184,196,0.8)',
             pointerEvents: 'none',
             transition: 'box-shadow 150ms',
           }}

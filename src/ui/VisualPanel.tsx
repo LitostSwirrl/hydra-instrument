@@ -114,7 +114,7 @@ const sectionHeaderStyle: React.CSSProperties = {
   fontWeight: 600,
   textTransform: 'uppercase',
   letterSpacing: '2px',
-  color: '#00E676',
+  color: '#B0B8C4',
   fontFamily: 'sans-serif',
   margin: 0,
   cursor: 'pointer',
@@ -125,7 +125,7 @@ const subLabelStyle: React.CSSProperties = {
   fontSize: '10px',
   textTransform: 'uppercase',
   letterSpacing: '1.5px',
-  color: 'rgba(0, 230, 118, 0.7)',
+  color: 'rgba(176, 184, 196, 0.7)',
   marginBottom: '4px',
   marginTop: '8px',
 }
@@ -158,7 +158,7 @@ export function VisualPanel({
             options={SOURCE_OPTIONS}
             value={source}
             onChange={onSourceChange}
-            accentColor="#00E676"
+            accentColor="#B0B8C4"
           />
 
           {sourceParams.length > 0 && (
@@ -173,7 +173,7 @@ export function VisualPanel({
                   max={param.max}
                   step={param.step}
                   onChange={(v) => onSourceArgChange(param.key, v)}
-                  accentColor="#00E676"
+                  accentColor="#B0B8C4"
                 />
               ))}
             </>
@@ -200,7 +200,7 @@ export function VisualPanel({
                       <span
                         style={{
                           fontSize: '10px',
-                          color: '#00E676',
+                          color: '#B0B8C4',
                           fontFamily: 'monospace',
                           textTransform: 'lowercase',
                         }}
@@ -232,7 +232,7 @@ export function VisualPanel({
                         max={param.max}
                         step={param.step}
                         onChange={(v) => onTransformArgChange(i, param.key, v)}
-                        accentColor="#00E676"
+                        accentColor="#B0B8C4"
                       />
                     ))}
                   </div>
@@ -249,7 +249,7 @@ export function VisualPanel({
                 options={TRANSFORM_OPTIONS}
                 value={addTransformValue}
                 onChange={setAddTransformValue}
-                accentColor="#00E676"
+                accentColor="#B0B8C4"
               />
             </div>
             <button
@@ -259,8 +259,8 @@ export function VisualPanel({
                 fontSize: '9px',
                 textTransform: 'uppercase',
                 letterSpacing: '1px',
-                backgroundColor: 'rgba(0,230,118,0.2)',
-                color: '#00E676',
+                backgroundColor: 'rgba(176,184,196,0.2)',
+                color: '#B0B8C4',
                 border: 'none',
                 borderRadius: '3px',
                 cursor: 'pointer',

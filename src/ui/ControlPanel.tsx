@@ -8,7 +8,7 @@ interface ControlPanelProps {
 }
 
 export function ControlPanel({ open, uiMode, onToggleMode, children }: ControlPanelProps) {
-  const modeColor = uiMode === 'simple' ? '#00E676' : '#FF1493'
+  const modeColor = uiMode === 'simple' ? '#B0B8C4' : '#B0B8C4'
 
   return (
     <>
@@ -20,11 +20,11 @@ export function ControlPanel({ open, uiMode, onToggleMode, children }: ControlPa
           background: transparent;
         }
         .hydra-panel::-webkit-scrollbar-thumb {
-          background: rgba(255, 20, 147, 0.3);
+          background: rgba(176, 184, 196, 0.3);
           border-radius: 2px;
         }
         .hydra-panel::-webkit-scrollbar-thumb:hover {
-          background: rgba(255, 20, 147, 0.5);
+          background: rgba(176, 184, 196, 0.5);
         }
       `}</style>
       <div

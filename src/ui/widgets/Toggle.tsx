@@ -6,7 +6,7 @@ interface ToggleProps {
   onChange: (value: boolean) => void
 }
 
-export function Toggle({ label, value, accentColor = '#FF1493', onChange }: ToggleProps) {
+export function Toggle({ label, value, accentColor = '#B0B8C4', onChange }: ToggleProps) {
   return (
     <div className="flex items-center gap-2 w-full">
       <span

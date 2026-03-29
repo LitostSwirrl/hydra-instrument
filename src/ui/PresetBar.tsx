@@ -59,7 +59,7 @@ export function PresetBar({ activeSlot, slots, onSelect, onExport, onImport, onC
                 fontFamily: 'monospace',
                 transition: 'background-color 150ms, color 150ms',
                 backgroundColor: isActive
-                  ? '#FF1493'
+                  ? '#B0B8C4'
                   : isOccupied
                   ? 'rgba(255,255,255,0.05)'
                   : 'rgba(255,255,255,0.02)',
@@ -85,7 +85,7 @@ export function PresetBar({ activeSlot, slots, onSelect, onExport, onImport, onC
         >
           Export
         </button>
-        <span style={{ color: '#444444', fontSize: '10px', fontFamily: 'sans-serif' }}>|</span>
+        <span style={{ color: '#2a2a34', fontSize: '10px', fontFamily: 'sans-serif' }}>|</span>
         <button
           style={actionButtonStyle}
           onClick={handleImportClick}
@@ -94,7 +94,7 @@ export function PresetBar({ activeSlot, slots, onSelect, onExport, onImport, onC
         >
           Import
         </button>
-        <span style={{ color: '#444444', fontSize: '10px', fontFamily: 'sans-serif' }}>|</span>
+        <span style={{ color: '#2a2a34', fontSize: '10px', fontFamily: 'sans-serif' }}>|</span>
         <button
           style={actionButtonStyle}
           onClick={onCopyURL}

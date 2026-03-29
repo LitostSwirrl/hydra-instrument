@@ -9,7 +9,7 @@ interface PillSelectorProps {
 export function PillSelector({
   options,
   value,
-  accentColor = '#FF1493',
+  accentColor = '#B0B8C4',
   onChange,
 }: PillSelectorProps) {
   return (

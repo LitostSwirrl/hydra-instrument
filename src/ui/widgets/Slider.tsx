@@ -15,7 +15,7 @@ export function Slider({
   min,
   max,
   step = 0.01,
-  accentColor = '#FF1493',
+  accentColor = '#B0B8C4',
   onChange,
 }: SliderProps) {
   const pct = ((value - min) / (max - min)) * 100

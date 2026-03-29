@@ -27,7 +27,7 @@ export function HUD({
     return () => clearTimeout(timer)
   }, [])
 
-  const modeColor = uiMode === 'simple' ? '#00E676' : '#FF1493'
+  const modeColor = uiMode === 'simple' ? '#B0B8C4' : '#B0B8C4'
 
   return (
     <div
@@ -52,7 +52,7 @@ export function HUD({
           {presetName || 'untitled'}
         </span>
         <div style={{ width: '80px', height: '3px', backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: '2px', overflow: 'hidden' }}>
-          <div style={{ height: '100%', width: `${Math.min(1, Math.max(0, audioLevel)) * 100}%`, backgroundColor: '#FF1493', borderRadius: '2px', transition: 'width 60ms linear' }} />
+          <div style={{ height: '100%', width: `${Math.min(1, Math.max(0, audioLevel)) * 100}%`, backgroundColor: '#B0B8C4', borderRadius: '2px', transition: 'width 60ms linear' }} />
         </div>
         <button
           onClick={onToggleMode}

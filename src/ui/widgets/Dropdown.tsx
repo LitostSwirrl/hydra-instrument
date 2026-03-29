@@ -13,7 +13,7 @@ interface DropdownProps {
   onChange: (value: string) => void
 }
 
-export function Dropdown({ label, options, value, accentColor = '#FF1493', onChange }: DropdownProps) {
+export function Dropdown({ label, options, value, accentColor = '#B0B8C4', onChange }: DropdownProps) {
   const [open, setOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 

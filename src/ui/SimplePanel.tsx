@@ -80,41 +80,41 @@ export function SimplePanel({
         <PillSelector
           options={presetPills}
           value={String(activePresetIndex)}
-          accentColor="#FF1493"
+          accentColor="#B0B8C4"
           onChange={(v) => onPresetSelect(parseInt(v, 10))}
         />
       </div>
 
       <div>
-        <p style={sectionStyle('#FFD700')}>Sound</p>
+        <p style={sectionStyle('#B0B8C4')}>Sound</p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
           <PillSelector
             options={SYNTH_OPTIONS}
             value={synthType}
-            accentColor="#FFD700"
+            accentColor="#B0B8C4"
             onChange={onSynthTypeChange}
           />
-          <Slider label="Tone" value={tone} min={0} max={1} step={0.01} accentColor="#FFD700" onChange={onToneChange} />
-          <Slider label="Space" value={space} min={0} max={1} step={0.01} accentColor="#FFD700" onChange={onSpaceChange} />
+          <Slider label="Tone" value={tone} min={0} max={1} step={0.01} accentColor="#B0B8C4" onChange={onToneChange} />
+          <Slider label="Space" value={space} min={0} max={1} step={0.01} accentColor="#B0B8C4" onChange={onSpaceChange} />
         </div>
       </div>
 
       <div>
-        <p style={sectionStyle('#00E676')}>Visuals</p>
+        <p style={sectionStyle('#B0B8C4')}>Visuals</p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
           <PillSelector
             options={VISUAL_GROUP_OPTIONS}
             value={visualGroup}
-            accentColor="#00E676"
+            accentColor="#B0B8C4"
             onChange={onVisualGroupChange}
           />
-          <Slider label="Intensity" value={intensity} min={0} max={1} step={0.01} accentColor="#00E676" onChange={onIntensityChange} />
-          <Slider label="Morph" value={morph} min={0} max={1} step={0.01} accentColor="#00E676" onChange={onMorphChange} />
+          <Slider label="Intensity" value={intensity} min={0} max={1} step={0.01} accentColor="#B0B8C4" onChange={onIntensityChange} />
+          <Slider label="Morph" value={morph} min={0} max={1} step={0.01} accentColor="#B0B8C4" onChange={onMorphChange} />
         </div>
       </div>
 
       <div>
-        <p style={sectionStyle('#4488FF')}>Rhythm</p>
+        <p style={sectionStyle('#8890A0')}>Rhythm</p>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <button
             onClick={onToggleSequencer}
@@ -123,7 +123,7 @@ export function SimplePanel({
               width: '28px',
               height: '28px',
               borderRadius: '50%',
-              backgroundColor: sequencerPlaying ? '#4488FF' : 'rgba(255,255,255,0.06)',
+              backgroundColor: sequencerPlaying ? '#8890A0' : 'rgba(255,255,255,0.06)',
               border: 'none',
               cursor: 'pointer',
               display: 'flex',
@@ -138,7 +138,7 @@ export function SimplePanel({
             {sequencerPlaying ? '\u25a0' : '\u25b6'}
           </button>
           <div style={{ flex: 1 }}>
-            <Slider label="BPM" value={bpm} min={60} max={200} step={1} accentColor="#4488FF" onChange={onBpmChange} />
+            <Slider label="BPM" value={bpm} min={60} max={200} step={1} accentColor="#8890A0" onChange={onBpmChange} />
           </div>
         </div>
       </div>

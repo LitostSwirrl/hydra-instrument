@@ -70,7 +70,7 @@ const sectionHeaderStyle: React.CSSProperties = {
   fontWeight: 600,
   textTransform: 'uppercase',
   letterSpacing: '2px',
-  color: '#4488FF',
+  color: '#8890A0',
   fontFamily: 'sans-serif',
   margin: 0,
   cursor: 'pointer',
@@ -83,7 +83,7 @@ const inputStyle: React.CSSProperties = {
   backgroundColor: 'rgba(255,255,255,0.04)',
   border: 'none',
   borderRadius: '3px',
-  color: '#4488FF',
+  color: '#8890A0',
   fontSize: '11px',
   fontFamily: 'monospace',
   textAlign: 'center',
@@ -134,7 +134,7 @@ export function MappingPanel({ mappings, onAdd, onRemove, onUpdate }: MappingPan
                     options={SOURCE_OPTIONS}
                     value={mapping.source}
                     onChange={(v) => onUpdate(mapping.id, 'source', v)}
-                    accentColor="#4488FF"
+                    accentColor="#8890A0"
                   />
                 </div>
                 <span style={{ fontSize: '10px', color: '#999999', flexShrink: 0 }}>\u2192</span>
@@ -144,7 +144,7 @@ export function MappingPanel({ mappings, onAdd, onRemove, onUpdate }: MappingPan
                     options={TARGET_OPTIONS}
                     value={mapping.target}
                     onChange={(v) => onUpdate(mapping.id, 'target', v)}
-                    accentColor="#4488FF"
+                    accentColor="#8890A0"
                   />
                 </div>
                 <button
@@ -195,7 +195,7 @@ export function MappingPanel({ mappings, onAdd, onRemove, onUpdate }: MappingPan
                 max={1}
                 step={0.01}
                 onChange={(v) => onUpdate(mapping.id, 'smooth', v)}
-                accentColor="#4488FF"
+                accentColor="#8890A0"
               />
 
               <Dropdown
@@ -203,7 +203,7 @@ export function MappingPanel({ mappings, onAdd, onRemove, onUpdate }: MappingPan
                 options={CURVE_OPTIONS}
                 value={mapping.curve}
                 onChange={(v) => onUpdate(mapping.id, 'curve', v)}
-                accentColor="#4488FF"
+                accentColor="#8890A0"
               />
             </div>
           ))}
@@ -217,8 +217,8 @@ export function MappingPanel({ mappings, onAdd, onRemove, onUpdate }: MappingPan
               fontSize: '9px',
               textTransform: 'uppercase',
               letterSpacing: '1px',
-              backgroundColor: 'rgba(68,136,255,0.2)',
-              color: '#4488FF',
+              backgroundColor: 'rgba(136,144,160,0.2)',
+              color: '#8890A0',
               border: 'none',
               borderRadius: '3px',
               cursor: 'pointer',

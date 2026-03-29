@@ -27,9 +27,9 @@ export const signalPreset: Preset = {
   },
   visual: {
     chain: {
-      source: { fn: 'osc', args: ['osc.frequency', 0.1, 0.8] },
+      source: { fn: 'osc', args: [60, 0.1, 0.8] },
       transforms: [
-        { fn: 'glitchScan', args: [0.5] },
+        { fn: 'kaleid', args: [4] },
         { fn: 'colorama', args: ['colorama.amount'] },
         { fn: 'rotate', args: [0.2, 1] },
         { fn: 'pixelate', args: [20, 20] },

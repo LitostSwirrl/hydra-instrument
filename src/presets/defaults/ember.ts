@@ -22,9 +22,9 @@ export const emberPreset: Preset = {
   },
   visual: {
     chain: {
-      source: { fn: 'ritualFire', args: ['ritualFire.turbulence', 'ritualFire.height', 0.7] },
+      source: { fn: 'ritualFire', args: [4, 1, 0.7] },
       transforms: [
-        { fn: 'modulate', args: [3, 0.2] },
+        { fn: 'scale', args: [1.01] },
         { fn: 'brightness', args: [0.05] },
       ],
       output: 'o0',

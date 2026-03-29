@@ -18,6 +18,7 @@ import { VisualPanel } from './ui/VisualPanel'
 import { MappingPanel } from './ui/MappingPanel'
 import { SimplePanel } from './ui/SimplePanel'
 import { MacroEngine } from './ui/MacroEngine'
+import { IntroGuide } from './ui/IntroGuide'
 
 // ---------- helpers for VisualPanel bridge ----------
 // VisualPanel works with named args (Record<string, number>), but HydraChainConfig
@@ -136,6 +137,9 @@ export default function App() {
   const rafRef = useRef<number>(0)
 
   const [started, setStarted] = useState(false)
+  const [showIntro, setShowIntro] = useState(
+    () => !localStorage.getItem('hydra-intro-seen')
+  )
   const [activeSlot, setActiveSlot] = useState(0)
   const [currentPreset, setCurrentPreset] = useState<Preset | null>(null)
   const currentPresetRef = useRef<Preset | null>(null)
@@ -667,6 +671,11 @@ export default function App() {
     })
   }, [currentPreset])
 
+  const handleIntroDone = useCallback(() => {
+    localStorage.setItem('hydra-intro-seen', '1')
+    setShowIntro(false)
+  }, [])
+
   // ---------- render ----------
   return (
     <>
@@ -683,6 +692,8 @@ export default function App() {
       />
 
       <StartOverlay visible={!started} onStart={handleStart} />
+
+      <IntroGuide visible={started && showIntro} onComplete={handleIntroDone} />
 
       {started && (
         <>
