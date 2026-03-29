@@ -1,287 +1,294 @@
-const sacredGeometry = {
-  name: 'sacredGeometry',
+const drift = {
+  name: 'drift',
   type: 'src',
   inputs: [
-    { type: 'float', name: 'sides', default: 6 },
-    { type: 'float', name: 'rings', default: 5 },
+    { type: 'float', name: 'speed', default: 0.5 },
+    { type: 'float', name: 'density', default: 8 },
+    { type: 'float', name: 'amplitude', default: 0.3 },
+  ],
+  glsl: `
+    vec2 st = _st;
+    float col = 0.0;
+    for (float i = 0.0; i < 12.0; i++) {
+      float y = (i + 0.5) / density;
+      float phase = i * 1.618 + time * speed * (0.3 + fract(i * 0.7) * 0.4);
+      float wave = y + sin(st.x * 3.0 + phase) * amplitude * (0.5 + fract(i * 0.37) * 0.5)
+                     + sin(st.x * 7.0 - phase * 0.7) * amplitude * 0.3;
+      float dist = abs(st.y - wave);
+      float thickness = 0.002 + 0.003 * sin(time * speed * 0.5 + i);
+      col += smoothstep(thickness * 2.0, 0.0, dist) * (0.15 + 0.1 * sin(time * 0.3 + i * 2.0));
+    }
+    float glow = exp(-length(st - 0.5) * 2.0) * 0.03;
+    col += glow;
+    return vec4(vec3(col), 1.0);
+  `,
+}
+
+const dendrite = {
+  name: 'dendrite',
+  type: 'src',
+  inputs: [
+    { type: 'float', name: 'branches', default: 5 },
+    { type: 'float', name: 'depth', default: 3 },
     { type: 'float', name: 'pulse', default: 0.5 },
   ],
   glsl: `
     vec2 st = _st - 0.5;
     float r = length(st);
     float a = atan(st.y, st.x);
-    float ringPattern = sin(r * rings * 6.2832 - time * pulse * 2.0) * 0.5 + 0.5;
-    float petalAngle = mod(a, 6.2832 / sides) - 3.1416 / sides;
-    float petals = cos(petalAngle * sides) * 0.5 + 0.5;
-    float seedPattern = 0.0;
-    for (float i = 0.0; i < 6.0; i++) {
-      float sa = i * 6.2832 / 6.0 + time * pulse * 0.3;
-      vec2 center = vec2(cos(sa), sin(sa)) * 0.18;
-      float d = length(st - center);
-      seedPattern += smoothstep(0.15 + pulse * 0.02, 0.14 + pulse * 0.02, d);
+    float col = 0.0;
+    for (float d = 1.0; d <= 5.0; d++) {
+      if (d > depth) break;
+      float freq = branches * pow(2.0, d - 1.0);
+      float branchAngle = mod(a + time * pulse * 0.1 / d, 6.2832 / freq) - 3.1416 / freq;
+      float branchDist = abs(branchAngle * r * freq * 0.15);
+      float rMin = (d - 1.0) * 0.08 + 0.02;
+      float rMax = d * 0.12 + 0.05;
+      float radialMask = smoothstep(rMin, rMin + 0.02, r) * smoothstep(rMax + 0.02, rMax, r);
+      float thickness = 0.008 / d;
+      float line = smoothstep(thickness * 2.0, 0.0, branchDist) * radialMask;
+      col += line * (0.35 / d);
     }
-    seedPattern = clamp(seedPattern, 0.0, 1.0);
-    float pattern = ringPattern * petals + seedPattern * 0.4;
-    float glow = smoothstep(0.5, 0.0, r) * 0.3;
-    pattern += glow;
-    vec3 pink = vec3(1.0, 0.078, 0.576);
-    vec3 gold = vec3(1.0, 0.843, 0.0);
-    vec3 green = vec3(0.0, 0.902, 0.463);
-    vec3 blue = vec3(0.267, 0.533, 1.0);
-    vec3 ringCol = mix(pink, gold, ringPattern);
-    ringCol = mix(ringCol, green, petals * 0.5);
-    vec3 col = mix(vec3(0.03, 0.01, 0.05), ringCol, pattern);
-    col += blue * seedPattern * 0.6;
-    col += vec3(0.0, 0.749, 0.647) * glow;
-    return vec4(col, 1.0);
-  `,
-}
-
-const tribalMask = {
-  name: 'tribalMask',
-  type: 'src',
-  inputs: [
-    { type: 'float', name: 'symmetry', default: 4 },
-    { type: 'float', name: 'complexity', default: 3 },
-    { type: 'float', name: 'glow', default: 0.5 },
-  ],
-  glsl: `
-    vec2 st = _st - 0.5;
-    st.x = abs(st.x);
-    float r = length(st);
-    float a = atan(st.y, st.x);
-    float eyeL = length((st - vec2(0.12, 0.06)) * vec2(1.8, 3.0));
-    float eyeR = length((st - vec2(0.12, -0.06)) * vec2(1.8, 3.0));
-    float eyes = smoothstep(0.12, 0.08, eyeL) + smoothstep(0.12, 0.08, eyeR);
-    float bands = sin(st.y * complexity * 20.0 + time * 0.5) * 0.5 + 0.5;
-    bands *= smoothstep(0.35, 0.15, r);
-    float crown = smoothstep(0.02, 0.0, abs(r - 0.3 - sin(a * symmetry + time) * 0.05));
-    crown *= step(0.0, st.y);
-    float innerGlow = exp(-r * 4.0) * glow;
-    float mask = bands * 0.5 + eyes * 0.8 + crown * 0.6 + innerGlow;
-    vec3 teal = vec3(0.0, 0.749, 0.647);
-    vec3 green = vec3(0.0, 0.902, 0.463);
-    vec3 pink = vec3(1.0, 0.078, 0.576);
-    vec3 gold = vec3(1.0, 0.843, 0.0);
-    vec3 bandCol = mix(teal, green, bands);
-    vec3 col = mix(vec3(0.02, 0.02, 0.03), bandCol, mask * 0.7);
-    col += pink * eyes * 0.8;
-    col += gold * crown * 0.9;
-    col += vec3(1.0, 0.078, 0.576) * innerGlow * 1.5;
-    return vec4(col, 1.0);
-  `,
-}
-
-const glitchScan = {
-  name: 'glitchScan',
-  type: 'color',
-  inputs: [
-    { type: 'float', name: 'speed', default: 1 },
-    { type: 'float', name: 'intensity', default: 0.5 },
-    { type: 'float', name: 'bands', default: 50 },
-  ],
-  glsl: `
-    vec2 st = _st;
-    float scanLine = sin(st.y * bands * 3.1416) * 0.5 + 0.5;
-    scanLine = pow(scanLine, 2.0 - intensity);
-    float trackNoise = fract(sin(floor(st.y * 40.0) * 43758.5453 + time * speed) * 0.5);
-    float tracking = step(1.0 - intensity * 0.15, trackNoise);
-    float hShift = tracking * (fract(sin(time * 137.0 + st.y * 500.0) * 43758.5453) - 0.5) * intensity * 0.1;
-    vec4 col = _c0;
-    col.r = _c0.r + hShift * 2.0;
-    col.b = _c0.b - hShift * 2.0;
-    col.rgb *= mix(1.0, scanLine, intensity * 0.6);
-    float blockY = floor(st.y * 12.0);
-    float blockGlitch = step(0.97 - intensity * 0.05, fract(sin(blockY * 78.233 + floor(time * speed * 4.0) * 45.164) * 43758.5453));
-    col.rgb = mix(col.rgb, col.gbr, blockGlitch * intensity);
-    float flicker = 1.0 - fract(sin(time * speed * 13.0) * 43758.5453) * intensity * 0.1;
-    col.rgb *= flicker;
-    return vec4(col.rgb, _c0.a);
-  `,
-}
-
-const particleField = {
-  name: 'particleField',
-  type: 'src',
-  inputs: [
-    { type: 'float', name: 'density', default: 50 },
-    { type: 'float', name: 'drift', default: 0.3 },
-    { type: 'float', name: 'size', default: 0.5 },
-  ],
-  glsl: `
-    vec2 st = _st;
-    vec3 col = vec3(0.0);
-    vec2 grid = st * density;
-    vec2 iGrid = floor(grid);
-    vec2 fGrid = fract(grid);
-    float brightness = 0.0;
-    vec3 particleCol = vec3(0.0);
-    for (float y = -1.0; y <= 1.0; y++) {
-      for (float x = -1.0; x <= 1.0; x++) {
-        vec2 neighbor = vec2(x, y);
-        vec2 cellId = iGrid + neighbor;
-        float h1 = fract(sin(dot(cellId, vec2(127.1, 311.7))) * 43758.5453);
-        float h2 = fract(sin(dot(cellId + vec2(37.0, 17.0), vec2(127.1, 311.7))) * 43758.5453);
-        vec2 randPos = vec2(h1, h2);
-        float h3 = fract(sin(dot(cellId + vec2(53.0, 7.0), vec2(127.1, 311.7))) * 43758.5453);
-        float h4 = fract(sin(dot(cellId + vec2(11.0, 91.0), vec2(127.1, 311.7))) * 43758.5453);
-        randPos += vec2(
-          sin(time * drift * (h3 * 2.0 - 1.0) + h1 * 6.28),
-          cos(time * drift * (h4 * 2.0 - 1.0) + h2 * 6.28)
-        ) * 0.3;
-        float d = length(neighbor + randPos - fGrid);
-        float h5 = fract(sin(dot(cellId + vec2(71.0, 31.0), vec2(127.1, 311.7))) * 43758.5453);
-        float pSize = (0.01 + h5 * 0.03) * size;
-        float particle = smoothstep(pSize, pSize * 0.1, d);
-        float twinkle = sin(time * 2.0 + h1 * 100.0) * 0.5 + 0.5;
-        particle *= 0.5 + twinkle * 0.5;
-        float hue = fract(h1 * 3.0 + time * 0.05);
-        vec3 pCol = vec3(0.0);
-        if (hue < 0.166) pCol = vec3(1.0, 0.078, 0.576);
-        else if (hue < 0.333) pCol = vec3(1.0, 0.2, 0.2);
-        else if (hue < 0.5) pCol = vec3(1.0, 0.843, 0.0);
-        else if (hue < 0.666) pCol = vec3(0.0, 0.902, 0.463);
-        else if (hue < 0.833) pCol = vec3(0.0, 0.749, 0.647);
-        else pCol = vec3(0.267, 0.533, 1.0);
-        particleCol += pCol * particle;
-        brightness += particle;
+    float centerGlow = exp(-r * 8.0) * 0.15 * (0.8 + 0.2 * sin(time * pulse));
+    col += centerGlow;
+    float nodeRing = smoothstep(0.003, 0.0, abs(r - 0.02));
+    col += nodeRing * 0.4;
+    for (float i = 0.0; i < 5.0; i++) {
+      if (i >= branches) break;
+      float na = i * 6.2832 / branches + time * pulse * 0.1;
+      for (float d = 1.0; d <= 3.0; d++) {
+        float nr = d * 0.12;
+        vec2 np = vec2(cos(na), sin(na)) * nr;
+        float nd = length(st - np);
+        col += smoothstep(0.006, 0.0, nd) * (0.3 / d);
       }
     }
-    col = particleCol;
-    col += vec3(0.02, 0.01, 0.03) * (1.0 - length(st - 0.5));
-    return vec4(col, 1.0);
+    return vec4(vec3(col), 1.0);
   `,
 }
 
-const voidPulse = {
-  name: 'voidPulse',
+const web = {
+  name: 'web',
   type: 'src',
   inputs: [
-    { type: 'float', name: 'depth', default: 3 },
-    { type: 'float', name: 'rate', default: 0.5 },
-    { type: 'float', name: 'spread', default: 1 },
+    { type: 'float', name: 'connections', default: 6 },
+    { type: 'float', name: 'tension', default: 0.5 },
+    { type: 'float', name: 'breathe', default: 0.3 },
+  ],
+  glsl: `
+    vec2 st = _st;
+    float col = 0.0;
+    float gridSize = connections;
+    for (float i = 0.0; i < 8.0; i++) {
+      if (i >= gridSize) break;
+      for (float j = 0.0; j < 8.0; j++) {
+        if (j >= gridSize) break;
+        vec2 cellId = vec2(i, j);
+        float h1 = fract(sin(dot(cellId, vec2(127.1, 311.7))) * 43758.5453);
+        float h2 = fract(sin(dot(cellId, vec2(269.5, 183.3))) * 43758.5453);
+        vec2 nodePos = (cellId + 0.5) / gridSize;
+        nodePos += vec2(
+          sin(time * breathe * (h1 - 0.5) + h1 * 6.28),
+          cos(time * breathe * (h2 - 0.5) + h2 * 6.28)
+        ) * 0.04 * tension;
+        float nd = length(st - nodePos);
+        col += smoothstep(0.008, 0.0, nd) * 0.5;
+        col += exp(-nd * 60.0) * 0.05;
+        for (float ni = i; ni < 8.0; ni++) {
+          if (ni >= gridSize) break;
+          for (float nj = 0.0; nj < 8.0; nj++) {
+            if (nj >= gridSize) break;
+            if (ni == i && nj <= j) continue;
+            vec2 nCellId = vec2(ni, nj);
+            float nh1 = fract(sin(dot(nCellId, vec2(127.1, 311.7))) * 43758.5453);
+            float nh2 = fract(sin(dot(nCellId, vec2(269.5, 183.3))) * 43758.5453);
+            float connHash = fract(sin(dot(cellId + nCellId, vec2(41.7, 89.3))) * 43758.5453);
+            if (connHash > tension) continue;
+            vec2 nNodePos = (nCellId + 0.5) / gridSize;
+            nNodePos += vec2(
+              sin(time * breathe * (nh1 - 0.5) + nh1 * 6.28),
+              cos(time * breathe * (nh2 - 0.5) + nh2 * 6.28)
+            ) * 0.04 * tension;
+            vec2 pa = st - nodePos;
+            vec2 ba = nNodePos - nodePos;
+            float t = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
+            float lineDist = length(pa - ba * t);
+            float edgeDist = length(nNodePos - nodePos);
+            if (edgeDist < 0.5) {
+              col += smoothstep(0.003, 0.0, lineDist) * 0.15 * (1.0 - edgeDist * 2.0);
+            }
+          }
+        }
+      }
+    }
+    return vec4(vec3(min(col, 1.0)), 1.0);
+  `,
+}
+
+const pulse = {
+  name: 'pulse',
+  type: 'src',
+  inputs: [
+    { type: 'float', name: 'rings', default: 5 },
+    { type: 'float', name: 'speed', default: 0.5 },
+    { type: 'float', name: 'deform', default: 0.3 },
   ],
   glsl: `
     vec2 st = _st - 0.5;
-    float r = length(st);
     float a = atan(st.y, st.x);
-    float breathPhase = time * rate;
-    float ringWave = 0.0;
-    vec3 ringColor = vec3(0.0);
-    for (float i = 0.0; i < 5.0; i++) {
-      float ringR = fract(breathPhase * 0.2 + i * 0.2) * spread;
-      float ringWidth = 0.01 + 0.02 * depth;
-      float ring = smoothstep(ringWidth, 0.0, abs(r - ringR)) * (1.0 - fract(breathPhase * 0.2 + i * 0.2));
-      ringWave += ring;
-      vec3 rCol = vec3(0.0);
-      if (i < 1.0) rCol = vec3(1.0, 0.078, 0.576);
-      else if (i < 2.0) rCol = vec3(1.0, 0.843, 0.0);
-      else if (i < 3.0) rCol = vec3(0.0, 0.902, 0.463);
-      else if (i < 4.0) rCol = vec3(0.267, 0.533, 1.0);
-      else rCol = vec3(1.0, 0.4, 0.0);
-      ringColor += rCol * ring;
+    float r = length(st);
+    float col = 0.0;
+    for (float i = 0.0; i < 8.0; i++) {
+      if (i >= rings) break;
+      float ringR = fract(time * speed * 0.15 + i / rings) * 0.6;
+      float deformation = sin(a * 3.0 + time * speed * 0.5 + i) * deform * 0.05
+                        + sin(a * 5.0 - time * speed * 0.3 + i * 2.0) * deform * 0.03;
+      float ringDist = abs(r - ringR - deformation);
+      float thickness = 0.002 + 0.002 * (1.0 - ringR / 0.6);
+      float fade = 1.0 - fract(time * speed * 0.15 + i / rings);
+      float ring = smoothstep(thickness * 2.5, 0.0, ringDist) * fade * 0.3;
+      col += ring;
     }
-    float voidGlow = exp(-r * (4.0 + depth)) * 0.5;
-    float angularNoise = sin(a * 6.0 + time * rate * 0.7) * 0.02 * depth;
-    ringWave += smoothstep(0.01, 0.0, abs(r - 0.1 - angularNoise)) * 0.3;
-    float tendril = sin(a * 3.0 + r * 10.0 - time * rate) * 0.5 + 0.5;
-    tendril *= smoothstep(0.5, 0.1, r) * depth * 0.1;
-    vec3 col = vec3(0.03, 0.02, 0.05) * (1.0 + (ringWave + voidGlow + tendril) * 1.5);
-    col += ringColor;
-    col += vec3(0.0, 0.749, 0.647) * voidGlow;
-    col += vec3(1.0, 0.078, 0.576) * tendril;
-    return vec4(col, 1.0);
+    float centerPulse = exp(-r * 12.0) * 0.12 * (0.7 + 0.3 * sin(time * speed * 2.0));
+    col += centerPulse;
+    float outerGlow = smoothstep(0.5, 0.3, r) * 0.02;
+    col += outerGlow;
+    return vec4(vec3(col), 1.0);
   `,
 }
 
-const ritualFire = {
-  name: 'ritualFire',
+const spore = {
+  name: 'spore',
   type: 'src',
   inputs: [
-    { type: 'float', name: 'turbulence', default: 3 },
-    { type: 'float', name: 'height', default: 1 },
-    { type: 'float', name: 'warmth', default: 0.7 },
+    { type: 'float', name: 'count', default: 40 },
+    { type: 'float', name: 'drift', default: 0.3 },
+    { type: 'float', name: 'trail', default: 0.5 },
   ],
   glsl: `
     vec2 st = _st;
-    st.x -= 0.5;
-    st.y = 1.0 - st.y;
-    float noiseVal = sin(st.x * turbulence * 4.0 + time * 2.0 + sin(st.y * 5.0)) * 0.5
-                   + sin(st.x * turbulence * 8.0 - time * 3.0 + cos(st.y * 8.0)) * 0.25
-                   + sin(st.x * turbulence * 16.0 + time * 5.0) * 0.125;
-    float flameWidth = 0.2 + st.y * 0.3;
-    float flameMask = smoothstep(flameWidth, flameWidth * 0.3, abs(st.x + noiseVal * 0.1));
-    float heightFade = smoothstep(height * 0.8, 0.0, st.y);
-    float flame = flameMask * heightFade;
-    float emberY = fract(st.y * 3.0 - time * 1.5);
-    float emberX = fract(sin(floor(st.y * 3.0 - time * 1.5) * 73.156) * 43758.5453) - 0.5;
-    float ember = smoothstep(0.02, 0.0, length(vec2(st.x - emberX * 0.3, emberY - 0.5)));
-    ember *= step(0.7, fract(sin(floor(st.y * 3.0 - time * 1.5) * 41.0) * 43758.5453));
-    vec3 col = vec3(0.0);
-    col += vec3(1.0, 0.843, 0.0) * flame * warmth;
-    col += vec3(1.0, 0.078, 0.576) * flame * (1.0 - warmth) * 2.0;
-    col += vec3(1.0, 0.4, 0.0) * flameMask * 0.4;
-    float emberPhase = fract(sin(floor(st.y * 3.0 - time * 1.5) * 23.0) * 43758.5453);
-    vec3 emberCol = emberPhase < 0.33 ? vec3(1.0, 0.843, 0.0)
-                  : emberPhase < 0.66 ? vec3(1.0, 0.078, 0.576)
-                  : vec3(0.0, 0.902, 0.463);
-    col += emberCol * ember * 0.7;
-    float haze = smoothstep(0.6, 0.0, st.y) * 0.05 * turbulence;
-    col += vec3(1.0, 0.4, 0.0) * haze;
-    return vec4(col, 1.0);
+    float col = 0.0;
+    for (float i = 0.0; i < 60.0; i++) {
+      if (i >= count) break;
+      float h1 = fract(sin(i * 127.1) * 43758.5453);
+      float h2 = fract(sin(i * 269.5) * 43758.5453);
+      float h3 = fract(sin(i * 419.2) * 43758.5453);
+      vec2 pos = vec2(h1, h2);
+      pos.x += sin(time * drift * (h3 - 0.5) * 2.0 + h1 * 6.28) * 0.15;
+      pos.y += cos(time * drift * (h1 - 0.5) * 2.0 + h2 * 6.28) * 0.15;
+      pos = fract(pos);
+      float d = length(st - pos);
+      float size = 0.003 + h3 * 0.004;
+      col += smoothstep(size, 0.0, d) * 0.5;
+      col += exp(-d * 100.0) * 0.04;
+      vec2 vel = vec2(
+        cos(time * drift * (h3 - 0.5) * 2.0 + h1 * 6.28),
+        -sin(time * drift * (h1 - 0.5) * 2.0 + h2 * 6.28)
+      ) * 0.15;
+      for (float t = 1.0; t <= 6.0; t++) {
+        vec2 trailPos = pos - vel * t * 0.012 * trail;
+        trailPos = fract(trailPos);
+        float td = length(st - trailPos);
+        float trailSize = size * (1.0 - t / 8.0);
+        col += smoothstep(trailSize, 0.0, td) * 0.08 * (1.0 - t / 7.0);
+      }
+    }
+    float ambient = exp(-length(st - 0.5) * 3.0) * 0.015;
+    col += ambient;
+    return vec4(vec3(min(col, 1.0)), 1.0);
   `,
 }
 
-const paisleyFlow = {
-  name: 'paisleyFlow',
+const weave = {
+  name: 'weave',
   type: 'src',
   inputs: [
-    { type: 'float', name: 'density', default: 3 },
-    { type: 'float', name: 'speed', default: 0.5 },
-    { type: 'float', name: 'colorShift', default: 0 },
+    { type: 'float', name: 'layers', default: 6 },
+    { type: 'float', name: 'frequency', default: 4 },
+    { type: 'float', name: 'phase', default: 0.5 },
   ],
   glsl: `
     vec2 st = _st;
-    float pattern = 0.0;
-    for (float i = 1.0; i <= 4.0; i++) {
-      float scale = density * i * 1.5;
-      vec2 p = st * scale;
-      float t = time * speed * (0.5 + i * 0.2);
-      p.x += sin(p.y * 2.0 + t) * 0.5;
-      p.y += cos(p.x * 1.5 - t * 0.7) * 0.4;
-      float a = atan(fract(p.y) - 0.5, fract(p.x) - 0.5);
-      float r = length(fract(p) - 0.5);
-      float tear = smoothstep(0.4, 0.1, r + sin(a * 2.0 + t) * 0.15);
-      float swirl = sin(a * 3.0 + r * 8.0 - t * 2.0) * 0.5 + 0.5;
-      tear *= swirl;
-      pattern += tear / i;
+    float col = 0.0;
+    float accumDensity = 0.0;
+    for (float i = 0.0; i < 10.0; i++) {
+      if (i >= layers) break;
+      float angle = i * 3.1416 / layers;
+      float s = sin(angle);
+      float c = cos(angle);
+      float projected = st.x * c + st.y * s;
+      float wave = sin(projected * frequency * 6.2832 + time * phase + i * 1.2) * 0.5 + 0.5;
+      float line = smoothstep(0.48, 0.5, wave) - smoothstep(0.5, 0.52, wave);
+      line *= 0.25;
+      float line2 = smoothstep(0.47, 0.5, wave) - smoothstep(0.5, 0.53, wave);
+      accumDensity += line2;
+      col += line;
     }
-    pattern = clamp(pattern, 0.0, 1.0);
-    float hue = fract(pattern * 1.5 + colorShift + time * speed * 0.05);
-    vec3 col = vec3(0.0);
-    float h = hue * 6.0;
-    if (h < 1.0) col = mix(vec3(1.0, 0.078, 0.576), vec3(1.0, 0.2, 0.2), h);
-    else if (h < 2.0) col = mix(vec3(1.0, 0.2, 0.2), vec3(1.0, 0.843, 0.0), h - 1.0);
-    else if (h < 3.0) col = mix(vec3(1.0, 0.843, 0.0), vec3(0.0, 0.902, 0.463), h - 2.0);
-    else if (h < 4.0) col = mix(vec3(0.0, 0.902, 0.463), vec3(0.0, 0.749, 0.647), h - 3.0);
-    else if (h < 5.0) col = mix(vec3(0.0, 0.749, 0.647), vec3(0.267, 0.533, 1.0), h - 4.0);
-    else col = mix(vec3(0.267, 0.533, 1.0), vec3(1.0, 0.078, 0.576), h - 5.0);
-    col *= pattern;
-    float outline = smoothstep(0.02, 0.0, abs(pattern - 0.5)) * 0.3;
-    col = mix(col, vec3(0.0), outline);
-    col += vec3(0.01, 0.005, 0.02) * (1.0 - pattern);
-    return vec4(col, 1.0);
+    float moire = accumDensity * accumDensity * 0.03;
+    col += moire;
+    float centerFade = 1.0 - smoothstep(0.3, 0.6, length(st - 0.5));
+    col *= 0.7 + centerFade * 0.3;
+    return vec4(vec3(col), 1.0);
+  `,
+}
+
+const mycelium = {
+  name: 'mycelium',
+  type: 'src',
+  inputs: [
+    { type: 'float', name: 'growth', default: 0.5 },
+    { type: 'float', name: 'branching', default: 4 },
+    { type: 'float', name: 'thickness', default: 0.5 },
+  ],
+  glsl: `
+    vec2 st = _st;
+    float col = 0.0;
+    for (float i = 0.0; i < 8.0; i++) {
+      if (i >= branching * 2.0) break;
+      float h = fract(sin(i * 73.156) * 43758.5453);
+      float startEdge = floor(h * 4.0);
+      vec2 origin;
+      if (startEdge < 1.0) origin = vec2(0.0, h);
+      else if (startEdge < 2.0) origin = vec2(1.0, h);
+      else if (startEdge < 3.0) origin = vec2(h, 0.0);
+      else origin = vec2(h, 1.0);
+      vec2 pos = origin;
+      vec2 dir = normalize(vec2(0.5) - origin + vec2(sin(i * 3.0), cos(i * 5.0)) * 0.3);
+      float pathLen = 0.3 + h * 0.5;
+      float segments = 20.0;
+      vec2 prevPos = pos;
+      for (float s = 0.0; s < 20.0; s++) {
+        float t = s / segments;
+        if (t > growth) break;
+        float turnNoise = sin(s * 2.0 + i * 7.0 + time * growth * 0.5) * 0.3
+                        + sin(s * 5.0 + i * 3.0 - time * 0.3) * 0.15;
+        dir = normalize(dir + vec2(-dir.y, dir.x) * turnNoise * 0.3);
+        pos = prevPos + dir * pathLen / segments;
+        vec2 pa = st - prevPos;
+        vec2 ba = pos - prevPos;
+        float segT = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
+        float segDist = length(pa - ba * segT);
+        float lineW = (0.002 + 0.003 * thickness) * (1.0 - t * 0.5);
+        col += smoothstep(lineW * 2.0, 0.0, segDist) * 0.2 * (1.0 - t * 0.7);
+        if (fract(sin(s * 41.0 + i * 17.0) * 43758.5453) > 0.6 && s > 2.0) {
+          float nd = length(st - pos);
+          col += smoothstep(0.005, 0.0, nd) * 0.25;
+        }
+        prevPos = pos;
+      }
+    }
+    return vec4(vec3(min(col, 1.0)), 1.0);
   `,
 }
 
 export function registerCustomShaders(synth: Record<string, any>): void {
   const setFn = synth.setFunction as (def: Record<string, unknown>) => void
   if (typeof setFn !== 'function') return
-  setFn(sacredGeometry)
-  setFn(tribalMask)
-  setFn(glitchScan)
-  setFn(particleField)
-  setFn(voidPulse)
-  setFn(ritualFire)
-  setFn(paisleyFlow)
+  setFn(drift)
+  setFn(dendrite)
+  setFn(web)
+  setFn(pulse)
+  setFn(spore)
+  setFn(weave)
+  setFn(mycelium)
 }
