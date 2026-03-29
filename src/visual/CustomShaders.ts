@@ -16,11 +16,9 @@ const drift = {
                      + sin(st.x * 7.0 - phase * 0.7) * amplitude * 0.3;
       float dist = abs(st.y - wave);
       float thickness = 0.002 + 0.003 * sin(time * speed * 0.5 + i);
-      col += smoothstep(thickness * 2.0, 0.0, dist) * (0.15 + 0.1 * sin(time * 0.3 + i * 2.0));
+      col += smoothstep(thickness * 2.0, 0.0, dist) * (0.08 + 0.04 * sin(time * 0.3 + i * 2.0));
     }
-    float glow = exp(-length(st - 0.5) * 2.0) * 0.03;
-    col += glow;
-    return vec4(vec3(col), 1.0);
+    return vec4(vec3(min(col, 1.0)), 1.0);
   `,
 }
 

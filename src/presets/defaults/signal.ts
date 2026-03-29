@@ -29,7 +29,6 @@ export const signalPreset: Preset = {
     chain: {
       source: { fn: 'web', args: [6, 0.5, 0.3] },
       transforms: [
-        { fn: 'pixelate', args: [20, 20] },
         { fn: 'rotate', args: [0.2, 1] },
       ],
       output: 'o0',
