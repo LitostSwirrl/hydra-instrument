@@ -27,12 +27,10 @@ export const signalPreset: Preset = {
   },
   visual: {
     chain: {
-      source: { fn: 'osc', args: [60, 0.1, 0.8] },
+      source: { fn: 'web', args: [6, 0.5, 0.3] },
       transforms: [
-        { fn: 'kaleid', args: [4] },
-        { fn: 'colorama', args: ['colorama.amount'] },
-        { fn: 'rotate', args: [0.2, 1] },
         { fn: 'pixelate', args: [20, 20] },
+        { fn: 'rotate', args: [0.2, 1] },
       ],
       output: 'o0',
     },
@@ -42,22 +40,22 @@ export const signalPreset: Preset = {
     {
       id: 'signal-map-0',
       source: 'fft[3]',
-      target: 'colorama.amount',
-      range: [0, 1.5],
+      target: 'web.connections',
+      range: [3, 12],
       smooth: 0.1,
       curve: 'linear',
     },
     {
       id: 'signal-map-1',
       source: 'sequencerStep',
-      target: 'osc.frequency',
-      range: [5, 80],
+      target: 'web.tension',
+      range: [0.1, 1],
       smooth: 0,
       curve: 'linear',
     },
   ],
   meta: {
     createdAt: '2026-03-27T00:00:00.000Z',
-    description: 'Futuristic grid. FMSynth at 128bpm with delay and distortion driving glitched oscillator visuals.',
+    description: 'Network grid. FMSynth at 128bpm with delay and distortion driving an interconnected web of nodes.',
   },
 }

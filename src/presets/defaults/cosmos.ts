@@ -23,11 +23,10 @@ export const cosmosPreset: Preset = {
   },
   visual: {
     chain: {
-      source: { fn: 'particleField', args: [50, 0.3, 2] },
+      source: { fn: 'spore', args: [40, 0.3, 0.5] },
       transforms: [
         { fn: 'rotate', args: ['rotate.angle', 0.3] },
         { fn: 'scale', args: [1.002] },
-        { fn: 'brightness', args: [0.1] },
       ],
       output: 'o0',
     },
@@ -37,8 +36,8 @@ export const cosmosPreset: Preset = {
     {
       id: 'cosmos-map-0',
       source: 'fft[1]',
-      target: 'particleField.density',
-      range: [20, 100],
+      target: 'spore.count',
+      range: [10, 80],
       smooth: 0.2,
       curve: 'exponential',
     },
@@ -53,6 +52,6 @@ export const cosmosPreset: Preset = {
   ],
   meta: {
     createdAt: '2026-03-27T00:00:00.000Z',
-    description: 'Infinite drift. Sine-like FMSynth with heavy reverb and long delay mapped to a rotating particle field.',
+    description: 'Floating spores. FMSynth with heavy reverb and long delay mapped to drifting particles with trailing filaments.',
   },
 }

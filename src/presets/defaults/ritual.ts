@@ -23,11 +23,10 @@ export const ritualPreset: Preset = {
   },
   visual: {
     chain: {
-      source: { fn: 'sacredGeometry', args: [6, 5, 'sacredGeometry.pulse'] },
+      source: { fn: 'dendrite', args: [5, 3, 'dendrite.pulse'] },
       transforms: [
         { fn: 'kaleid', args: ['kaleid.nSides'] },
         { fn: 'rotate', args: [0.1, 0.5] },
-        { fn: 'colorama', args: [0.4] },
       ],
       output: 'o0',
     },
@@ -37,7 +36,7 @@ export const ritualPreset: Preset = {
     {
       id: 'ritual-map-0',
       source: 'fft[0]',
-      target: 'sacredGeometry.pulse',
+      target: 'dendrite.pulse',
       range: [0.1, 2],
       smooth: 0.1,
       curve: 'linear',
@@ -53,6 +52,6 @@ export const ritualPreset: Preset = {
   ],
   meta: {
     createdAt: '2026-03-27T00:00:00.000Z',
-    description: 'Tribal percussion. MembraneSynth with reverb and delay driving sacred geometry with kaleidoscope symmetry.',
+    description: 'Branching dendrites. MembraneSynth percussion driving fractal neural patterns with kaleidoscope symmetry.',
   },
 }

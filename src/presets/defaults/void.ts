@@ -21,11 +21,10 @@ export const voidPreset: Preset = {
   },
   visual: {
     chain: {
-      source: { fn: 'voronoi', args: [5, 0.1, 0.3] },
+      source: { fn: 'drift', args: [0.5, 8, 0.3] },
       transforms: [
-        { fn: 'color', args: [0.3, 0.1, 0.5] },
-        { fn: 'scale', args: ['voronoi.scale'] },
-        { fn: 'brightness', args: [-0.1] },
+        { fn: 'brightness', args: [-0.05] },
+        { fn: 'scale', args: ['drift.scale'] },
       ],
       output: 'o0',
     },
@@ -35,15 +34,7 @@ export const voidPreset: Preset = {
     {
       id: 'void-map-0',
       source: 'envelope',
-      target: 'voronoi.scale',
-      range: [2, 15],
-      smooth: 0.1,
-      curve: 'linear',
-    },
-    {
-      id: 'void-map-1',
-      source: 'fft[0]',
-      target: 'scale.amount',
+      target: 'drift.scale',
       range: [0.8, 1.5],
       smooth: 0.15,
       curve: 'linear',
@@ -51,6 +42,6 @@ export const voidPreset: Preset = {
   ],
   meta: {
     createdAt: '2026-03-27T00:00:00.000Z',
-    description: 'Solemn drone. Slow attack MonoSynth through deep reverb and low filter, mapped to voronoi geometry.',
+    description: 'Drifting filaments. Slow MonoSynth through deep reverb driving gentle floating lines.',
   },
 }

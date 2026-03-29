@@ -23,9 +23,8 @@ export const maskPreset: Preset = {
   },
   visual: {
     chain: {
-      source: { fn: 'tribalMask', args: ['tribalMask.symmetry', 3, 'tribalMask.glow'] },
+      source: { fn: 'weave', args: [6, 4, 'weave.phase'] },
       transforms: [
-        { fn: 'colorama', args: [0.3] },
         { fn: 'brightness', args: [-0.05] },
       ],
       output: 'o0',
@@ -36,22 +35,22 @@ export const maskPreset: Preset = {
     {
       id: 'mask-map-0',
       source: 'noteFrequency',
-      target: 'tribalMask.symmetry',
-      range: [2, 8],
+      target: 'weave.layers',
+      range: [3, 12],
       smooth: 0,
       curve: 'step',
     },
     {
       id: 'mask-map-1',
       source: 'fft[2]',
-      target: 'tribalMask.glow',
-      range: [0.1, 2],
+      target: 'weave.phase',
+      range: [0, 3],
       smooth: 0.1,
       curve: 'linear',
     },
   ],
   meta: {
     createdAt: '2026-03-27T00:00:00.000Z',
-    description: 'Ancient and eerie. FMSynth through bandpass 500Hz, reverb, delay and slight distortion driving a tribal mask shader.',
+    description: 'Woven threads. FMSynth through bandpass, reverb, and delay driving overlapping sine filaments with moire patterns.',
   },
 }

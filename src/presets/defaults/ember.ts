@@ -22,7 +22,7 @@ export const emberPreset: Preset = {
   },
   visual: {
     chain: {
-      source: { fn: 'ritualFire', args: [4, 1, 0.7] },
+      source: { fn: 'pulse', args: [5, 0.5, 0.3] },
       transforms: [
         { fn: 'scale', args: [1.01] },
         { fn: 'brightness', args: [0.05] },
@@ -35,22 +35,22 @@ export const emberPreset: Preset = {
     {
       id: 'ember-map-0',
       source: 'mouse.x',
-      target: 'ritualFire.turbulence',
-      range: [1, 8],
+      target: 'pulse.deform',
+      range: [0.1, 1],
       smooth: 0.2,
       curve: 'linear',
     },
     {
       id: 'ember-map-1',
       source: 'envelope',
-      target: 'ritualFire.height',
-      range: [0.3, 2],
+      target: 'pulse.speed',
+      range: [0.2, 2],
       smooth: 0.1,
       curve: 'exponential',
     },
   ],
   meta: {
     createdAt: '2026-03-27T00:00:00.000Z',
-    description: 'Tribal warmth. AMSynth warm pad through reverb and delay driving a ritual fire shader.',
+    description: 'Ripple pulse. AMSynth warm pad through reverb and delay driving expanding concentric rings.',
   },
 }
