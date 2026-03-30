@@ -3,55 +3,57 @@ import { Preset } from '../types'
 export const ritualPreset: Preset = {
   name: 'ritual',
   audio: {
-    synthType: 'MembraneSynth',
-    synthParams: {
-      attack: 0.01,
-      decay: 0.4,
-      sustain: 0.1,
-      release: 0.6,
-      pitchDecay: 0.05,
-      octaves: 4,
-    },
-    effects: [
-      { type: 'filter', bypass: true, wet: 1, params: { frequency: 2000, Q: 1 } },
-      { type: 'reverb', bypass: false, wet: 0.6, params: { decay: 3 } },
-      { type: 'delay', bypass: false, wet: 0.4, params: { delayTime: 0.3, feedback: 0.5 } },
-      { type: 'distortion', bypass: true, wet: 0.5, params: { distortion: 0.4 } },
-      { type: 'compressor', bypass: false, wet: 1, params: { threshold: -24, ratio: 4 } },
-    ],
-    sequencer: null,
+    pattern:
+      's("bd:4 ~ cp bd:4").bank("RolandTR808").room(space * 0.6).gain(intensity)',
+    keyboard: { s: 'triangle', effects: 'room(space * 0.6).delay(0.3)' },
+    macros: { tone: 0.5, space: 0.6, intensity: 0.7 },
   },
   visual: {
     chain: {
-      source: { fn: 'dendrite', args: [5, 3, 'dendrite.pulse'] },
+      source: { fn: 'osc', args: [40, 0.03, 1.7] },
       transforms: [
-        { fn: 'kaleid', args: ['kaleid.nSides'] },
+        { fn: 'kaleid', args: ['kaleid.sides'] },
+        {
+          fn: 'mult',
+          args: [
+            {
+              fn: 'osc',
+              args: [40, 0.001, 0],
+              transforms: [{ fn: 'rotate', args: [1.58] }],
+            },
+          ],
+        },
+        { fn: 'blend', args: [{ fn: 'src', args: ['o0'] }, 0.92] },
+        {
+          fn: 'modulateScale',
+          args: [{ fn: 'osc', args: [10, 0] }, -0.03],
+        },
+        { fn: 'scale', args: [0.8] },
         { fn: 'rotate', args: [0.1, 0.5] },
       ],
       output: 'o0',
     },
-    customShaders: [],
   },
   mappings: [
     {
       id: 'ritual-map-0',
-      source: 'fft[0]',
-      target: 'dendrite.pulse',
-      range: [0.1, 2],
-      smooth: 0.1,
-      curve: 'linear',
-    },
-    {
-      id: 'ritual-map-1',
       source: 'noteVelocity',
-      target: 'kaleid.nSides',
+      target: 'kaleid.sides',
       range: [3, 12],
       smooth: 0,
       curve: 'step',
     },
+    {
+      id: 'ritual-map-1',
+      source: 'fft[0]',
+      target: 'osc.freq',
+      range: [30, 60],
+      smooth: 0.1,
+      curve: 'linear',
+    },
   ],
   meta: {
-    createdAt: '2026-03-27T00:00:00.000Z',
-    description: 'Branching dendrites. MembraneSynth percussion driving fractal neural patterns with kaleidoscope symmetry.',
+    createdAt: '2026-03-30T00:00:00.000Z',
+    description: 'Fractal symmetry. Kaleidoscope with feedback spiral.',
   },
 }

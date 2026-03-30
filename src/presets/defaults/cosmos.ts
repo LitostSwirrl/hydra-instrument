@@ -3,41 +3,44 @@ import { Preset } from '../types'
 export const cosmosPreset: Preset = {
   name: 'cosmos',
   audio: {
-    synthType: 'FMSynth',
-    synthParams: {
-      attack: 1.2,
-      decay: 0.8,
-      sustain: 0.6,
-      release: 2.5,
-      modulationIndex: 1,
-      harmonicity: 1,
-    },
-    effects: [
-      { type: 'filter', bypass: true, wet: 1, params: { frequency: 2000, Q: 1 } },
-      { type: 'reverb', bypass: false, wet: 0.9, params: { decay: 8 } },
-      { type: 'delay', bypass: false, wet: 0.5, params: { delayTime: 0.5, feedback: 0.55 } },
-      { type: 'distortion', bypass: true, wet: 0.5, params: { distortion: 0.4 } },
-      { type: 'compressor', bypass: false, wet: 1, params: { threshold: -24, ratio: 4 } },
-    ],
-    sequencer: null,
+    pattern:
+      'note("<c3 g3 e3 b3>/8").s("sine").room(space * 0.9).delay(space * 0.5).gain(intensity * 0.6)',
+    keyboard: { s: 'sine', effects: 'room(space * 0.9).delay(space * 0.5)' },
+    macros: { tone: 0.5, space: 0.9, intensity: 0.4 },
   },
   visual: {
     chain: {
-      source: { fn: 'spore', args: ['spore.count', 0.3, 0.5] },
+      source: { fn: 'osc', args: [60, -0.015, 0.3] },
       transforms: [
-        { fn: 'rotate', args: ['rotate.angle', 0.3] },
-        { fn: 'scale', args: [1.002] },
+        {
+          fn: 'diff',
+          args: [
+            {
+              fn: 'osc',
+              args: [60, 0.08],
+              transforms: [{ fn: 'rotate', args: [1.5708] }],
+            },
+          ],
+        },
+        {
+          fn: 'modulateScale',
+          args: [{ fn: 'noise', args: [3.5, 0.25] }, 0.6],
+        },
+        { fn: 'invert', args: [] },
+        { fn: 'brightness', args: [0.1] },
+        { fn: 'contrast', args: [1.2] },
+        { fn: 'blend', args: [{ fn: 'src', args: ['o0'] }, 0.92] },
+        { fn: 'scale', args: [0.999] },
       ],
       output: 'o0',
     },
-    customShaders: [],
   },
   mappings: [
     {
       id: 'cosmos-map-0',
       source: 'fft[1]',
-      target: 'spore.count',
-      range: [10, 80],
+      target: 'noise.speed',
+      range: [0.1, 0.5],
       smooth: 0.2,
       curve: 'exponential',
     },
@@ -51,7 +54,7 @@ export const cosmosPreset: Preset = {
     },
   ],
   meta: {
-    createdAt: '2026-03-27T00:00:00.000Z',
-    description: 'Floating spores. FMSynth with heavy reverb and long delay mapped to drifting particles with trailing filaments.',
+    createdAt: '2026-03-30T00:00:00.000Z',
+    description: 'Organic web. Noise-warped structures with edge detection.',
   },
 }

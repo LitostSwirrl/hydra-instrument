@@ -1,4 +1,3 @@
-import { EffectConfig, Mapping } from '../state/store'
 import { HydraChainConfig } from '../visual/HydraEngine'
 
 // -- Expanded chain config types for nested sources and feedback --
@@ -14,15 +13,28 @@ export interface TransformNode {
   args: (number | string | ChainNode)[]
 }
 
+export type CurveType = 'linear' | 'exponential' | 'step'
+
 export interface PresetAudio {
-  synthType: string
-  synthParams: Record<string, number>
-  effects: EffectConfig[]
-  sequencer: {
-    pattern: (string | null)[]
-    subdivision: string
-    bpm: number
-  } | null
+  pattern: string
+  keyboard: {
+    s: string
+    effects: string
+  }
+  macros: {
+    tone: number
+    space: number
+    intensity: number
+  }
+}
+
+export interface MappingConfig {
+  id: string
+  source: string
+  target: string
+  range: [number, number]
+  smooth: number
+  curve: CurveType
 }
 
 export interface Preset {
@@ -30,9 +42,8 @@ export interface Preset {
   audio: PresetAudio
   visual: {
     chain: HydraChainConfig
-    customShaders: string[]
   }
-  mappings: Mapping[]
+  mappings: MappingConfig[]
   meta: {
     createdAt: string
     description: string

@@ -3,54 +3,44 @@ import { Preset } from '../types'
 export const maskPreset: Preset = {
   name: 'mask',
   audio: {
-    synthType: 'FMSynth',
-    synthParams: {
-      attack: 0.05,
-      decay: 0.4,
-      sustain: 0.3,
-      release: 0.9,
-      modulationIndex: 6,
-      harmonicity: 2,
-    },
-    effects: [
-      { type: 'filter', bypass: false, wet: 1, params: { frequency: 500, Q: 3 } },
-      { type: 'reverb', bypass: false, wet: 0.55, params: { decay: 3.5 } },
-      { type: 'delay', bypass: false, wet: 0.4, params: { delayTime: 0.35, feedback: 0.5 } },
-      { type: 'distortion', bypass: false, wet: 0.2, params: { distortion: 0.3 } },
-      { type: 'compressor', bypass: false, wet: 1, params: { threshold: -24, ratio: 4 } },
-    ],
-    sequencer: null,
+    pattern:
+      'note("c3 [e3 g3] c3 [a3 c4]").s("square").lpf(tone * 500).room(space * 0.55).dist("0.3:.2").gain(intensity * 0.8)',
+    keyboard: { s: 'square', effects: 'lpf(tone * 500).room(space * 0.55)' },
+    macros: { tone: 0.5, space: 0.55, intensity: 0.6 },
   },
   visual: {
     chain: {
-      source: { fn: 'weave', args: ['weave.layers', 4, 'weave.phase'] },
+      source: { fn: 'shape', args: [4, 0.25, 0.009] },
       transforms: [
+        { fn: 'rotate', args: ['mask.rotate'] },
+        { fn: 'repeat', args: ['mask.grid', 'mask.grid'] },
+        { fn: 'modulate', args: [{ fn: 'src', args: ['o0'] }, 0.1] },
+        { fn: 'blend', args: [{ fn: 'src', args: ['o0'] }, 0.9] },
         { fn: 'brightness', args: [-0.05] },
       ],
       output: 'o0',
     },
-    customShaders: [],
   },
   mappings: [
     {
       id: 'mask-map-0',
       source: 'noteFrequency',
-      target: 'weave.layers',
-      range: [3, 12],
+      target: 'mask.grid',
+      range: [4, 12],
       smooth: 0,
       curve: 'step',
     },
     {
       id: 'mask-map-1',
       source: 'fft[2]',
-      target: 'weave.phase',
-      range: [0, 3],
+      target: 'mask.rotate',
+      range: [-0.05, 0.05],
       smooth: 0.1,
       curve: 'linear',
     },
   ],
   meta: {
-    createdAt: '2026-03-27T00:00:00.000Z',
-    description: 'Woven threads. FMSynth through bandpass, reverb, and delay driving overlapping sine filaments with moire patterns.',
+    createdAt: '2026-03-30T00:00:00.000Z',
+    description: 'Grid with feedback. Repeated shapes with self-modulation.',
   },
 }

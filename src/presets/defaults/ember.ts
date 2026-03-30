@@ -3,54 +3,67 @@ import { Preset } from '../types'
 export const emberPreset: Preset = {
   name: 'ember',
   audio: {
-    synthType: 'AMSynth',
-    synthParams: {
-      attack: 0.3,
-      decay: 0.6,
-      sustain: 0.5,
-      release: 1.5,
-      harmonicity: 2,
-    },
-    effects: [
-      { type: 'filter', bypass: false, wet: 1, params: { frequency: 1200, Q: 1 } },
-      { type: 'reverb', bypass: false, wet: 0.5, params: { decay: 4 } },
-      { type: 'delay', bypass: false, wet: 0.35, params: { delayTime: 0.4, feedback: 0.45 } },
-      { type: 'distortion', bypass: true, wet: 0.5, params: { distortion: 0.4 } },
-      { type: 'compressor', bypass: false, wet: 1, params: { threshold: -24, ratio: 4 } },
-    ],
-    sequencer: null,
+    pattern:
+      'note("<c3 eb3 g3>/2").s("triangle").lpf(tone * 1200).room(space * 0.5).delay(space * 0.35).gain(intensity * 0.7)',
+    keyboard: { s: 'triangle', effects: 'lpf(tone * 1200).room(space * 0.5)' },
+    macros: { tone: 0.6, space: 0.5, intensity: 0.5 },
   },
   visual: {
     chain: {
-      source: { fn: 'pulse', args: [5, 'pulse.speed', 'pulse.deform'] },
+      source: { fn: 'voronoi', args: [50, 1] },
       transforms: [
-        { fn: 'scale', args: [1.01] },
+        { fn: 'luma', args: [0.5] },
+        {
+          fn: 'modulate',
+          args: [
+            {
+              fn: 'osc',
+              args: [-1000, -1],
+              transforms: [
+                {
+                  fn: 'modulate',
+                  args: [
+                    {
+                      fn: 'osc',
+                      args: [],
+                      transforms: [{ fn: 'luma', args: [] }],
+                    },
+                  ],
+                },
+              ],
+            },
+            'ember.mod',
+          ],
+        },
+        { fn: 'blend', args: [{ fn: 'src', args: ['o0'] }] },
+        { fn: 'blend', args: [{ fn: 'src', args: ['o0'] }] },
+        { fn: 'blend', args: [{ fn: 'src', args: ['o0'] }] },
         { fn: 'brightness', args: [0.05] },
+        { fn: 'scale', args: [1.01] },
       ],
       output: 'o0',
     },
-    customShaders: [],
   },
   mappings: [
     {
       id: 'ember-map-0',
-      source: 'mouse.x',
-      target: 'pulse.deform',
-      range: [0.1, 1],
-      smooth: 0.2,
-      curve: 'linear',
-    },
-    {
-      id: 'ember-map-1',
       source: 'envelope',
-      target: 'pulse.speed',
-      range: [0.2, 2],
+      target: 'ember.mod',
+      range: [0.01, 0.1],
       smooth: 0.1,
       curve: 'exponential',
     },
+    {
+      id: 'ember-map-1',
+      source: 'mouse.x',
+      target: 'voronoi.speed',
+      range: [0.5, 3],
+      smooth: 0.2,
+      curve: 'linear',
+    },
   ],
   meta: {
-    createdAt: '2026-03-27T00:00:00.000Z',
-    description: 'Ripple pulse. AMSynth warm pad through reverb and delay driving expanding concentric rings.',
+    createdAt: '2026-03-30T00:00:00.000Z',
+    description: 'Organic cells. Voronoi smearing with triple feedback.',
   },
 }

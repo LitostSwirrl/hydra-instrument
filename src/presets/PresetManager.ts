@@ -29,9 +29,21 @@ export class PresetManager {
       const json = localStorage.getItem(STORAGE_KEY)
       if (json) {
         const parsed = JSON.parse(json) as (Preset | null)[]
+        // Detect old Tone.js format
+        const first = parsed.find((p) => p !== null)
+        if (
+          first &&
+          'synthType' in (first.audio as Record<string, unknown>)
+        ) {
+          // Old format - clear and use defaults
+          this.slots = new Array(6).fill(null)
+          return
+        }
         this.slots = parsed.slice(0, 6)
       }
-    } catch { /* ignore corrupt data */ }
+    } catch {
+      /* ignore corrupt data */
+    }
   }
 
   private saveToStorage(): void {
