@@ -76,45 +76,64 @@ const web = {
   glsl: `
     vec2 st = _st;
     float col = 0.0;
-    float gridSize = connections;
+    float gs = connections;
     for (float i = 0.0; i < 8.0; i++) {
-      if (i >= gridSize) break;
+      if (i >= gs) break;
       for (float j = 0.0; j < 8.0; j++) {
-        if (j >= gridSize) break;
-        vec2 cellId = vec2(i, j);
-        float h1 = fract(sin(dot(cellId, vec2(127.1, 311.7))) * 43758.5453);
-        float h2 = fract(sin(dot(cellId, vec2(269.5, 183.3))) * 43758.5453);
-        vec2 nodePos = (cellId + 0.5) / gridSize;
-        nodePos += vec2(
+        if (j >= gs) break;
+        vec2 id = vec2(i, j);
+        float h1 = fract(sin(dot(id, vec2(127.1, 311.7))) * 43758.5453);
+        float h2 = fract(sin(dot(id, vec2(269.5, 183.3))) * 43758.5453);
+        vec2 np = (id + 0.5) / gs + vec2(
           sin(time * breathe * (h1 - 0.5) + h1 * 6.28),
           cos(time * breathe * (h2 - 0.5) + h2 * 6.28)
         ) * 0.04 * tension;
-        float nd = length(st - nodePos);
+        float nd = length(st - np);
         col += smoothstep(0.008, 0.0, nd) * 0.5;
         col += exp(-nd * 60.0) * 0.05;
-        for (float ni = i; ni < 8.0; ni++) {
-          if (ni >= gridSize) break;
-          for (float nj = 0.0; nj < 8.0; nj++) {
-            if (nj >= gridSize) break;
-            if (ni == i && nj <= j) continue;
-            vec2 nCellId = vec2(ni, nj);
-            float nh1 = fract(sin(dot(nCellId, vec2(127.1, 311.7))) * 43758.5453);
-            float nh2 = fract(sin(dot(nCellId, vec2(269.5, 183.3))) * 43758.5453);
-            float connHash = fract(sin(dot(cellId + nCellId, vec2(41.7, 89.3))) * 43758.5453);
-            if (connHash > tension) continue;
-            vec2 nNodePos = (nCellId + 0.5) / gridSize;
-            nNodePos += vec2(
-              sin(time * breathe * (nh1 - 0.5) + nh1 * 6.28),
-              cos(time * breathe * (nh2 - 0.5) + nh2 * 6.28)
+        // Right neighbor
+        if (i + 1.0 < gs) {
+          vec2 rid = vec2(i + 1.0, j);
+          float rh1 = fract(sin(dot(rid, vec2(127.1, 311.7))) * 43758.5453);
+          float rh2 = fract(sin(dot(rid, vec2(269.5, 183.3))) * 43758.5453);
+          vec2 rp = (rid + 0.5) / gs + vec2(
+            sin(time * breathe * (rh1 - 0.5) + rh1 * 6.28),
+            cos(time * breathe * (rh2 - 0.5) + rh2 * 6.28)
+          ) * 0.04 * tension;
+          vec2 pa = st - np;
+          vec2 ba = rp - np;
+          float t = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
+          col += smoothstep(0.003, 0.0, length(pa - ba * t)) * 0.15;
+        }
+        // Bottom neighbor
+        if (j + 1.0 < gs) {
+          vec2 bid = vec2(i, j + 1.0);
+          float bh1 = fract(sin(dot(bid, vec2(127.1, 311.7))) * 43758.5453);
+          float bh2 = fract(sin(dot(bid, vec2(269.5, 183.3))) * 43758.5453);
+          vec2 bp = (bid + 0.5) / gs + vec2(
+            sin(time * breathe * (bh1 - 0.5) + bh1 * 6.28),
+            cos(time * breathe * (bh2 - 0.5) + bh2 * 6.28)
+          ) * 0.04 * tension;
+          vec2 pa = st - np;
+          vec2 ba = bp - np;
+          float t = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
+          col += smoothstep(0.003, 0.0, length(pa - ba * t)) * 0.15;
+        }
+        // Diagonal neighbor (tension-gated)
+        if (i + 1.0 < gs && j + 1.0 < gs) {
+          float ch = fract(sin(dot(id, vec2(41.7, 89.3))) * 43758.5453);
+          if (ch < tension) {
+            vec2 did = vec2(i + 1.0, j + 1.0);
+            float dh1 = fract(sin(dot(did, vec2(127.1, 311.7))) * 43758.5453);
+            float dh2 = fract(sin(dot(did, vec2(269.5, 183.3))) * 43758.5453);
+            vec2 dp = (did + 0.5) / gs + vec2(
+              sin(time * breathe * (dh1 - 0.5) + dh1 * 6.28),
+              cos(time * breathe * (dh2 - 0.5) + dh2 * 6.28)
             ) * 0.04 * tension;
-            vec2 pa = st - nodePos;
-            vec2 ba = nNodePos - nodePos;
+            vec2 pa = st - np;
+            vec2 ba = dp - np;
             float t = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
-            float lineDist = length(pa - ba * t);
-            float edgeDist = length(nNodePos - nodePos);
-            if (edgeDist < 0.5) {
-              col += smoothstep(0.003, 0.0, lineDist) * 0.15 * (1.0 - edgeDist * 2.0);
-            }
+            col += smoothstep(0.003, 0.0, length(pa - ba * t)) * 0.1;
           }
         }
       }

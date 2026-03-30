@@ -22,7 +22,7 @@ export const emberPreset: Preset = {
   },
   visual: {
     chain: {
-      source: { fn: 'pulse', args: [5, 0.5, 0.3] },
+      source: { fn: 'pulse', args: [5, 'pulse.speed', 'pulse.deform'] },
       transforms: [
         { fn: 'scale', args: [1.01] },
         { fn: 'brightness', args: [0.05] },

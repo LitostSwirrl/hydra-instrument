@@ -23,7 +23,7 @@ export const maskPreset: Preset = {
   },
   visual: {
     chain: {
-      source: { fn: 'weave', args: [6, 4, 'weave.phase'] },
+      source: { fn: 'weave', args: ['weave.layers', 4, 'weave.phase'] },
       transforms: [
         { fn: 'brightness', args: [-0.05] },
       ],

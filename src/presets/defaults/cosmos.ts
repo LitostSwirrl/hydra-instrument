@@ -23,7 +23,7 @@ export const cosmosPreset: Preset = {
   },
   visual: {
     chain: {
-      source: { fn: 'spore', args: [40, 0.3, 0.5] },
+      source: { fn: 'spore', args: ['spore.count', 0.3, 0.5] },
       transforms: [
         { fn: 'rotate', args: ['rotate.angle', 0.3] },
         { fn: 'scale', args: [1.002] },

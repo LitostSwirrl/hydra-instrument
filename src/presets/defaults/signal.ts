@@ -27,7 +27,7 @@ export const signalPreset: Preset = {
   },
   visual: {
     chain: {
-      source: { fn: 'web', args: [6, 0.5, 0.3] },
+      source: { fn: 'web', args: ['web.connections', 'web.tension', 0.3] },
       transforms: [
         { fn: 'rotate', args: [0.2, 1] },
       ],
