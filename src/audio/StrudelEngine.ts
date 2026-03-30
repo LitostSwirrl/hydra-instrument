@@ -24,6 +24,7 @@ export class StrudelEngine {
   private activeNotes = new Map<string, boolean>()
   private keyboardConfig: KeyboardConfig = { s: 'sine', effects: '' }
   private triggerCallback: ((hap: unknown) => void) | null = null
+  private errorCallback: ((error: string) => void) | null = null
   private repl: { setCps: (cps: number) => void } | null = null
 
   async start(): Promise<void> {
@@ -56,11 +57,20 @@ export class StrudelEngine {
         ? `(${code}).onTrigger((hap) => globalThis.__strudelTrigger?.(hap), false)`
         : code
       evaluate(wrappedCode, true).catch((err: unknown) => {
-        console.error('[StrudelEngine] pattern evaluation failed:', err)
+        const msg = err instanceof Error ? err.message : String(err)
+        console.error('[StrudelEngine] pattern evaluation failed:', msg)
+        this.errorCallback?.(msg)
       })
     } catch (err) {
-      console.error('[StrudelEngine] pattern evaluation failed (sync):', err)
+      const msg = err instanceof Error ? err.message : String(err)
+      console.error('[StrudelEngine] pattern evaluation failed (sync):', msg)
+      this.errorCallback?.(msg)
     }
+  }
+
+  /** Set a callback that fires when pattern evaluation fails. */
+  setErrorCallback(cb: (error: string) => void): void {
+    this.errorCallback = cb
   }
 
   /** Set a callback that fires on every Strudel hap event (for PatternBridge). */

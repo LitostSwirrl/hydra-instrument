@@ -160,7 +160,7 @@ export default function App() {
   const analysis = useAppStore((s) => s.analysis)
   const patternCode = useAppStore((s) => s.patternCode)
   const patternPlaying = useAppStore((s) => s.patternPlaying)
-  const patternError: string | null = null // TODO: wire from engine errors if needed
+  const patternError = useAppStore((s) => s.patternError)
   const macros = useAppStore((s) => s.macros)
   const bpm = useAppStore((s) => s.bpm)
 
@@ -309,6 +309,10 @@ export default function App() {
           whole: { begin: h.whole.begin, end: h.whole.end },
         })
       }
+    })
+
+    engine.setErrorCallback((error: string) => {
+      useAppStore.getState().setPatternError(error)
     })
 
     // 4. Hydra
@@ -502,6 +506,7 @@ export default function App() {
     const engine = strudelEngineRef.current
     if (!engine) return
     const code = useAppStore.getState().patternCode
+    useAppStore.getState().setPatternError(null)
     engine.setPattern(code)
     useAppStore.getState().setPatternPlaying(true)
   }, [])

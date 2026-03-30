@@ -110,4 +110,12 @@ describe('store', () => {
     setBpm(999)
     expect(useAppStore.getState().bpm).toBe(300)
   })
+
+  it('should set and clear pattern error', () => {
+    const { setPatternError } = useAppStore.getState()
+    setPatternError('syntax error at line 1')
+    expect(useAppStore.getState().patternError).toBe('syntax error at line 1')
+    setPatternError(null)
+    expect(useAppStore.getState().patternError).toBeNull()
+  })
 })
