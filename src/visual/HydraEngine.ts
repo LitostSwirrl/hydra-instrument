@@ -1,10 +1,17 @@
 import Hydra from 'hydra-synth'
 import { registerCustomShaders } from './CustomShaders'
+import type { ChainNode, TransformNode } from '../presets/types'
 
 export interface HydraChainConfig {
-  source: { fn: string; args: (number | string)[] }
-  transforms: { fn: string; args: (number | string)[] }[]
+  source: { fn: string; args: (number | string | ChainNode)[]; transforms?: TransformNode[] }
+  transforms: { fn: string; args: (number | string | ChainNode)[] }[]
   output: string
+}
+
+const OUTPUT_BUFFERS = ['o0', 'o1', 'o2', 'o3'] as const
+
+function isChainNode(arg: unknown): arg is ChainNode {
+  return typeof arg === 'object' && arg !== null && 'fn' in arg && 'args' in arg
 }
 
 export class HydraEngine {
@@ -28,26 +35,63 @@ export class HydraEngine {
     this.paramGetter = getter
   }
 
-  buildChain(config: HydraChainConfig): void {
+  private resolveArg(arg: number | string | ChainNode): any {
+    if (typeof arg === 'number') return arg
+    if (typeof arg === 'string') {
+      if (OUTPUT_BUFFERS.includes(arg as (typeof OUTPUT_BUFFERS)[number])) {
+        return this.synth[arg]
+      }
+      return this.paramGetter?.(arg, 0) ?? (() => 0)
+    }
+    if (isChainNode(arg)) {
+      return this.buildSubChain(arg)
+    }
+    return arg
+  }
+
+  private buildSubChain(node: ChainNode): any {
     const s = this.synth
 
-    const resolveArg = (arg: number | string): any => {
-      if (typeof arg === 'string') {
-        return this.paramGetter?.(arg, 0) ?? (() => 0)
+    const sourceFn = s[node.fn]
+    if (typeof sourceFn !== 'function') return s.solid()
+
+    let chain = sourceFn.call(s, ...node.args.map((a) => this.resolveArg(a)))
+
+    if (node.transforms) {
+      for (const transform of node.transforms) {
+        const fn = chain[transform.fn]
+        if (typeof fn === 'function') {
+          chain = fn.call(chain, ...transform.args.map((a) => this.resolveArg(a)))
+        }
       }
-      return arg
     }
+
+    return chain
+  }
+
+  buildChain(config: HydraChainConfig): void {
+    const s = this.synth
 
     try {
       const sourceFn = s[config.source.fn]
       if (typeof sourceFn !== 'function') return
 
-      let chain = sourceFn.call(s, ...config.source.args.map(resolveArg))
+      let chain = sourceFn.call(s, ...config.source.args.map((a) => this.resolveArg(a)))
+
+      // Apply transforms on the source itself (e.g., source with .rotate())
+      if (config.source.transforms) {
+        for (const transform of config.source.transforms) {
+          const fn = chain[transform.fn]
+          if (typeof fn === 'function') {
+            chain = fn.call(chain, ...transform.args.map((a) => this.resolveArg(a)))
+          }
+        }
+      }
 
       for (const transform of config.transforms) {
         const fn = chain[transform.fn]
         if (typeof fn === 'function') {
-          chain = fn.call(chain, ...transform.args.map(resolveArg))
+          chain = fn.call(chain, ...transform.args.map((a) => this.resolveArg(a)))
         }
       }
 
