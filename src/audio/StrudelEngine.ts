@@ -24,11 +24,13 @@ export class StrudelEngine {
   private activeNotes = new Map<string, boolean>()
   private keyboardConfig: KeyboardConfig = { s: 'sine', effects: '' }
   private triggerCallback: ((hap: unknown) => void) | null = null
+  private repl: { setCps: (cps: number) => void } | null = null
 
   async start(): Promise<void> {
     if (this.initialized) return
 
-    await initStrudel()
+    const repl = await initStrudel()
+    this.repl = repl
 
     // Set default macros on globalThis so pattern code can reference them
     for (const [name, value] of Object.entries(DEFAULT_MACROS)) {
@@ -120,6 +122,11 @@ export class StrudelEngine {
    */
   setMacro(name: string, value: number): void {
     globalRef[name] = value
+  }
+
+  /** Set tempo in BPM. Converts to cycles-per-second for Strudel. */
+  setBPM(bpm: number): void {
+    this.repl?.setCps(bpm / 60)
   }
 
   /** Returns the Web Audio AudioContext. Throws if not initialized. */

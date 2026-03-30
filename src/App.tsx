@@ -162,6 +162,7 @@ export default function App() {
   const patternPlaying = useAppStore((s) => s.patternPlaying)
   const patternError: string | null = null // TODO: wire from engine errors if needed
   const macros = useAppStore((s) => s.macros)
+  const bpm = useAppStore((s) => s.bpm)
 
   // ---------- preset manager (singleton, no audio dependency) ----------
   if (!presetManagerRef.current) {
@@ -529,6 +530,11 @@ export default function App() {
     useAppStore.getState().setMacro(name, value)
   }, [])
 
+  const handleBpmChange = useCallback((value: number) => {
+    useAppStore.getState().setBpm(value)
+    strudelEngineRef.current?.setBPM(value)
+  }, [])
+
   const handleVisualGroupChange = useCallback((group: string) => {
     setVisualGroup(group)
     const source = VISUAL_GROUP_TO_SOURCE[group] ?? 'osc'
@@ -645,7 +651,7 @@ export default function App() {
       {started && (
         <>
           <HUD
-            bpm={0}
+            bpm={bpm}
             presetName={currentPreset?.name ?? ''}
             audioLevel={analysis.envelope}
             panelOpen={panelOpen}
@@ -681,8 +687,8 @@ export default function App() {
                 onVisualGroupChange={handleVisualGroupChange}
                 intensity={macros.intensity}
                 onIntensityChange={(v) => handleMacroChange('intensity', v)}
-                bpm={0}
-                onBpmChange={() => {}}
+                bpm={bpm}
+                onBpmChange={handleBpmChange}
                 patternPlaying={patternPlaying}
                 onTogglePattern={handleTogglePattern}
               />

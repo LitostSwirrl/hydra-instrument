@@ -69,6 +69,9 @@ export interface AppState {
   onset: number
   patternNote: number
   setPatternData: (cycle: number, density: number, onset: number, patternNote: number) => void
+
+  bpm: number
+  setBpm: (bpm: number) => void
 }
 
 const initialState = {
@@ -98,6 +101,8 @@ const initialState = {
   density: 0,
   onset: 0,
   patternNote: 0,
+
+  bpm: 120,
 }
 
 export const useAppStore = create<AppState>()(
@@ -137,6 +142,7 @@ export const useAppStore = create<AppState>()(
       set((s) => ({ macros: { ...s.macros, [name]: value } })),
     setPatternData: (cycle, density, onset, patternNote) =>
       set({ cycle, density, onset, patternNote }),
+    setBpm: (bpm) => set({ bpm: Math.max(20, Math.min(300, bpm)) }),
   }))
 )
 

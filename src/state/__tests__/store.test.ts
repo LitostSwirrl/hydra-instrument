@@ -100,4 +100,14 @@ describe('store', () => {
     expect(useAppStore.getState().onset).toBe(1)
     expect(useAppStore.getState().patternNote).toBe(0.6)
   })
+
+  it('should set bpm with clamping', () => {
+    const { setBpm } = useAppStore.getState()
+    setBpm(140)
+    expect(useAppStore.getState().bpm).toBe(140)
+    setBpm(10)
+    expect(useAppStore.getState().bpm).toBe(20)
+    setBpm(999)
+    expect(useAppStore.getState().bpm).toBe(300)
+  })
 })
