@@ -1,5 +1,4 @@
 import Hydra from 'hydra-synth'
-import { registerCustomShaders } from './CustomShaders'
 import type { ChainNode, TransformNode } from '../presets/types'
 
 export interface HydraChainConfig {
@@ -28,7 +27,6 @@ export class HydraEngine {
       height: canvas.height,
     })
     this.synth = (this.hydra as any).synth
-    registerCustomShaders(this.synth)
   }
 
   setParamGetter(getter: (target: string, defaultValue: number) => () => number): void {

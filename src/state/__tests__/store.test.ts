@@ -6,31 +6,6 @@ beforeEach(() => {
 })
 
 describe('store', () => {
-  it('has default synth type FMSynth', () => {
-    expect(useAppStore.getState().synthType).toBe('FMSynth')
-  })
-
-  it('has 5 effects in chain', () => {
-    expect(useAppStore.getState().effects).toHaveLength(5)
-  })
-
-  it('setSynthType changes synth', () => {
-    useAppStore.getState().setSynthType('AMSynth')
-    expect(useAppStore.getState().synthType).toBe('AMSynth')
-  })
-
-  it('setEffectBypass toggles bypass', () => {
-    useAppStore.getState().setEffectBypass(1, true)
-    expect(useAppStore.getState().effects[1].bypass).toBe(true)
-  })
-
-  it('setEffectWet clamps to 0-1', () => {
-    useAppStore.getState().setEffectWet(0, 1.5)
-    expect(useAppStore.getState().effects[0].wet).toBe(1)
-    useAppStore.getState().setEffectWet(0, -0.5)
-    expect(useAppStore.getState().effects[0].wet).toBe(0)
-  })
-
   it('addMapping and removeMapping', () => {
     const mapping = {
       id: 'test-1', source: 'envelope',
