@@ -3,6 +3,7 @@ import { subscribeWithSelector } from 'zustand/middleware'
 
 export type SynthType = 'FMSynth' | 'AMSynth' | 'MembraneSynth' | 'MonoSynth'
 export type UIMode = 'simple' | 'pro'
+export type MacroName = 'tone' | 'space' | 'intensity'
 export type CurveType = 'linear' | 'exponential' | 'step'
 
 export interface EffectConfig {
@@ -88,6 +89,21 @@ export interface AppState {
   uiMode: UIMode
   setUIMode: (mode: UIMode) => void
   toggleUIMode: () => void
+
+  // Strudel audio state
+  patternCode: string
+  patternPlaying: boolean
+  macros: { tone: number; space: number; intensity: number }
+  setPatternCode: (code: string) => void
+  setPatternPlaying: (playing: boolean) => void
+  setMacro: (name: MacroName, value: number) => void
+
+  // Pattern bridge data (for visual mapping)
+  cycle: number
+  density: number
+  onset: number
+  patternNote: number
+  setPatternData: (cycle: number, density: number, onset: number, patternNote: number) => void
 }
 
 const defaultEffects: EffectConfig[] = [
@@ -129,6 +145,17 @@ const initialState = {
   ui: { panelOpen: false, activeSection: 'audio' as UIState['activeSection'] },
 
   uiMode: 'simple' as UIMode,
+
+  // Strudel audio state
+  patternCode: '',
+  patternPlaying: false,
+  macros: { tone: 0.5, space: 0.3, intensity: 0.5 },
+
+  // Pattern bridge data
+  cycle: 0,
+  density: 0,
+  onset: 0,
+  patternNote: 0,
 }
 
 export const useAppStore = create<AppState>()(
@@ -188,9 +215,16 @@ export const useAppStore = create<AppState>()(
 
     setUIMode: (mode) => set({ uiMode: mode }),
     toggleUIMode: () => set((s) => ({ uiMode: s.uiMode === 'simple' ? 'pro' : 'simple' })),
+
+    setPatternCode: (code) => set({ patternCode: code }),
+    setPatternPlaying: (playing) => set({ patternPlaying: playing }),
+    setMacro: (name, value) =>
+      set((s) => ({ macros: { ...s.macros, [name]: value } })),
+    setPatternData: (cycle, density, onset, patternNote) =>
+      set({ cycle, density, onset, patternNote }),
   }))
 )
 
 // expose getInitialState for test resets
 ;(useAppStore as unknown as { getInitialState: () => typeof initialState }).getInitialState =
-  () => ({ ...initialState, effects: defaultEffects.map((e) => ({ ...e, params: { ...e.params } })), analysis: { ...initialState.analysis, fftBands: new Array(8).fill(0) as number[] }, mappings: [], sequencer: { ...initialState.sequencer, pattern: [...initialState.sequencer.pattern] }, mouse: { ...initialState.mouse }, ui: { ...initialState.ui }, uiMode: 'simple' as UIMode })
+  () => ({ ...initialState, effects: defaultEffects.map((e) => ({ ...e, params: { ...e.params } })), analysis: { ...initialState.analysis, fftBands: new Array(8).fill(0) as number[] }, mappings: [], sequencer: { ...initialState.sequencer, pattern: [...initialState.sequencer.pattern] }, mouse: { ...initialState.mouse }, ui: { ...initialState.ui }, uiMode: 'simple' as UIMode, macros: { ...initialState.macros } })

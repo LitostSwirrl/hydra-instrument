@@ -100,4 +100,29 @@ describe('store', () => {
     useAppStore.getState().toggleUIMode()
     expect(useAppStore.getState().uiMode).toBe('simple')
   })
+
+  it('should set pattern code', () => {
+    useAppStore.getState().setPatternCode('note("c3").s("sine")')
+    expect(useAppStore.getState().patternCode).toBe('note("c3").s("sine")')
+  })
+
+  it('should set pattern playing', () => {
+    useAppStore.getState().setPatternPlaying(true)
+    expect(useAppStore.getState().patternPlaying).toBe(true)
+  })
+
+  it('should set macros', () => {
+    useAppStore.getState().setMacro('tone', 0.7)
+    expect(useAppStore.getState().macros.tone).toBe(0.7)
+    // Other macros unchanged
+    expect(useAppStore.getState().macros.space).toBe(0.3)
+  })
+
+  it('should set pattern data', () => {
+    useAppStore.getState().setPatternData(0.5, 0.3, 1, 0.6)
+    expect(useAppStore.getState().cycle).toBe(0.5)
+    expect(useAppStore.getState().density).toBe(0.3)
+    expect(useAppStore.getState().onset).toBe(1)
+    expect(useAppStore.getState().patternNote).toBe(0.6)
+  })
 })
