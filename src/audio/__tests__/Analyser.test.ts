@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { dbToNormalized, reduceToBands } from '../analyserUtils'
+import { dbToNormalized, reduceToBands } from '../analysisUtils'
 
 describe('dbToNormalized', () => {
   it('maps min to 0', () => expect(dbToNormalized(-100, -100, -10)).toBe(0))

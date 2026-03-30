@@ -1,6 +1,6 @@
 import * as Tone from 'tone'
 import { useAppStore } from '../state/store'
-import { dbToNormalized, reduceToBands } from './analyserUtils'
+import { dbToNormalized, reduceToBands } from './analysisUtils'
 
 export { dbToNormalized, reduceToBands }
 
