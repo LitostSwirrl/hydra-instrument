@@ -144,4 +144,15 @@ describe('StrudelAnalyser', () => {
 
     expect(mockAnalyserNode.disconnect).toHaveBeenCalledOnce()
   })
+
+  it('connectSource connects upstream node to analyser', async () => {
+    const ctx = new AudioContext()
+    const { StrudelAnalyser } = await import('../StrudelAnalyser')
+    const analyser = new StrudelAnalyser(ctx)
+    const gain = ctx.createGain()
+    const spy = vi.spyOn(gain, 'connect')
+    analyser.connectSource(gain)
+    expect(spy).toHaveBeenCalledWith(analyser.getAnalyserNode())
+    analyser.dispose()
+  })
 })

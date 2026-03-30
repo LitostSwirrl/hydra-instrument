@@ -16,6 +16,11 @@ export class StrudelAnalyser {
     this.analyserNode.connect(destination)
   }
 
+  /** Connect an upstream audio node so the analyser receives its signal. */
+  connectSource(source: AudioNode): void {
+    source.connect(this.analyserNode)
+  }
+
   getAnalysis(): { bands: number[]; envelope: number } {
     this.analyserNode.getFloatFrequencyData(this.fftData)
     const numBands = useAppStore.getState().analysis.numBands
