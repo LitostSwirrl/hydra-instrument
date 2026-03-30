@@ -1,14 +1,57 @@
 import { ReactNode } from 'react'
+import { PatternEditor } from './PatternEditor'
+import { Slider } from './widgets/Slider'
 
 interface ControlPanelProps {
   open: boolean
   uiMode: 'simple' | 'pro'
   onToggleMode: () => void
   children: ReactNode
+  patternCode?: string
+  onPatternChange?: (code: string) => void
+  onEvaluatePattern?: () => void
+  onStopPattern?: () => void
+  patternPlaying?: boolean
+  patternError?: string | null
+  macros?: { tone: number; space: number; intensity: number }
+  onMacroChange?: (name: 'tone' | 'space' | 'intensity', value: number) => void
 }
 
-export function ControlPanel({ open, uiMode, onToggleMode, children }: ControlPanelProps) {
+const sectionHeaderStyle: React.CSSProperties = {
+  fontSize: '11px',
+  fontWeight: 600,
+  textTransform: 'uppercase',
+  letterSpacing: '2px',
+  color: '#B0B8C4',
+  fontFamily: 'sans-serif',
+  margin: '0 0 10px 0',
+}
+
+export function ControlPanel({
+  open,
+  uiMode,
+  onToggleMode,
+  children,
+  patternCode,
+  onPatternChange,
+  onEvaluatePattern,
+  onStopPattern,
+  patternPlaying,
+  patternError,
+  macros,
+  onMacroChange,
+}: ControlPanelProps) {
   const modeColor = uiMode === 'simple' ? '#B0B8C4' : '#B0B8C4'
+
+  const showPatternEditor =
+    uiMode === 'pro' &&
+    patternCode !== undefined &&
+    onPatternChange &&
+    onEvaluatePattern &&
+    onStopPattern &&
+    patternPlaying !== undefined &&
+    macros &&
+    onMacroChange
 
   return (
     <>
@@ -61,6 +104,24 @@ export function ControlPanel({ open, uiMode, onToggleMode, children }: ControlPa
             </div>
           </button>
         </div>
+        {showPatternEditor && (
+          <>
+            <PatternEditor
+              code={patternCode}
+              onChange={onPatternChange}
+              onEvaluate={onEvaluatePattern}
+              onStop={onStopPattern}
+              isPlaying={patternPlaying}
+              error={patternError ?? null}
+            />
+            <div style={{ marginBottom: '16px' }}>
+              <p style={sectionHeaderStyle}>MACROS</p>
+              <Slider label="Tone" value={macros.tone} onChange={(v) => onMacroChange('tone', v)} min={0} max={1} step={0.01} />
+              <Slider label="Space" value={macros.space} onChange={(v) => onMacroChange('space', v)} min={0} max={1} step={0.01} />
+              <Slider label="Intensity" value={macros.intensity} onChange={(v) => onMacroChange('intensity', v)} min={0} max={1} step={0.01} />
+            </div>
+          </>
+        )}
         {children}
       </div>
     </>
