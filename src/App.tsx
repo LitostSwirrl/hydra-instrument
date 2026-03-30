@@ -1,23 +1,21 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { useAppStore, SynthType, Mapping } from './state/store'
-import { AudioEngine } from './audio/AudioEngine'
-import { Sequencer } from './audio/Sequencer'
-import { MicInput } from './audio/MicInput'
+import { useAppStore, Mapping } from './state/store'
+import { StrudelEngine } from './audio/StrudelEngine'
+import { StrudelAnalyser } from './audio/StrudelAnalyser'
+import { PatternBridge } from './audio/PatternBridge'
 import { HydraEngine, HydraChainConfig } from './visual/HydraEngine'
 import { MappingEngine } from './mapping/MappingEngine'
 import { KeyboardHandler } from './input/KeyboardHandler'
 import { MouseHandler } from './input/MouseHandler'
 import { PresetManager } from './presets/PresetManager'
-import { Preset } from './presets/types'
+import { Preset, ChainNode } from './presets/types'
 import { StartOverlay } from './ui/StartOverlay'
 import { HUD } from './ui/HUD'
 import { ControlPanel } from './ui/ControlPanel'
 import { PresetBar } from './ui/PresetBar'
-import { AudioPanel } from './ui/AudioPanel'
 import { VisualPanel } from './ui/VisualPanel'
 import { MappingPanel } from './ui/MappingPanel'
 import { SimplePanel } from './ui/SimplePanel'
-import { MacroEngine } from './ui/MacroEngine'
 import { IntroGuide } from './ui/IntroGuide'
 
 // ---------- helpers for VisualPanel bridge ----------
@@ -37,13 +35,7 @@ const SOURCE_ARG_KEYS: Record<string, string[]> = {
   shape: ['sides', 'radius', 'smoothing'],
   gradient: ['speed'],
   solid: ['r', 'g', 'b'],
-  drift: ['speed', 'density', 'amplitude'],
-  dendrite: ['branches', 'depth', 'pulse'],
-  web: ['connections', 'tension', 'breathe'],
-  pulse: ['rings', 'speed', 'deform'],
-  spore: ['count', 'drift', 'trail'],
-  weave: ['layers', 'frequency', 'phase'],
-  mycelium: ['growth', 'branching', 'thickness'],
+  src: [],
 }
 
 const TRANSFORM_ARG_KEYS: Record<string, string[]> = {
@@ -77,16 +69,18 @@ const VISUAL_GROUP_TO_SOURCE: Record<string, string> = {
   Flow: 'mycelium',
 }
 
+type ChainArg = number | string | ChainNode
+
 function positionalToNamed(
   fn: string,
-  args: (number | string)[],
+  args: ChainArg[],
   keyMap: Record<string, string[]>
 ): Record<string, number> {
   const keys = keyMap[fn] ?? []
   const result: Record<string, number> = {}
   keys.forEach((key, i) => {
     const val = args[i]
-    // string args are mapping targets -- show 0 in UI
+    // non-number args (strings, ChainNode) show as 0 in UI
     result[key] = typeof val === 'number' ? val : 0
   })
   return result
@@ -95,14 +89,14 @@ function positionalToNamed(
 function namedToPositional(
   fn: string,
   named: Record<string, number>,
-  original: (number | string)[],
+  original: ChainArg[],
   keyMap: Record<string, string[]>
-): (number | string)[] {
+): ChainArg[] {
   const keys = keyMap[fn] ?? []
   return keys.map((key, i) => {
     const origVal = original[i]
-    // Preserve string mapping targets
-    if (typeof origVal === 'string') return origVal
+    // Preserve string/ChainNode mapping targets
+    if (typeof origVal === 'string' || (typeof origVal === 'object' && origVal !== null)) return origVal
     return named[key] ?? (typeof origVal === 'number' ? origVal : 0)
   })
 }
@@ -126,11 +120,11 @@ function chainToVisualUI(chain: HydraChainConfig): {
 
 export default function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const audioEngineRef = useRef<AudioEngine | null>(null)
+  const strudelEngineRef = useRef<StrudelEngine | null>(null)
+  const strudelAnalyserRef = useRef<StrudelAnalyser | null>(null)
+  const patternBridgeRef = useRef<PatternBridge | null>(null)
   const hydraEngineRef = useRef<HydraEngine | null>(null)
   const mappingEngineRef = useRef<MappingEngine | null>(null)
-  const sequencerRef = useRef<Sequencer | null>(null)
-  const micInputRef = useRef<MicInput | null>(null)
   const keyboardRef = useRef<KeyboardHandler | null>(null)
   const mouseRef = useRef<MouseHandler | null>(null)
   const presetManagerRef = useRef<PresetManager | null>(null)
@@ -149,10 +143,6 @@ export default function App() {
   const [visualSourceArgs, setVisualSourceArgs] = useState<Record<string, number>>({})
   const [visualTransforms, setVisualTransforms] = useState<VisualTransformUI[]>([])
 
-  const [macroTone, setMacroTone] = useState(0.5)
-  const [macroSpace, setMacroSpace] = useState(0.3)
-  const [macroIntensity, setMacroIntensity] = useState(0.5)
-  const [macroMorph, setMacroMorph] = useState(0)
   const [visualGroup, setVisualGroup] = useState('Geometry')
 
   // Keep a ref to the current chain config for rebuilding
@@ -163,15 +153,14 @@ export default function App() {
   })
 
   // Store selectors
-  const synthType = useAppStore((s) => s.synthType)
-  const synthParams = useAppStore((s) => s.synthParams)
-  const effects = useAppStore((s) => s.effects)
-  const sequencer = useAppStore((s) => s.sequencer)
-  const micEnabled = useAppStore((s) => s.micEnabled)
   const mappings = useAppStore((s) => s.mappings)
   const panelOpen = useAppStore((s) => s.ui.panelOpen)
   const uiMode = useAppStore((s) => s.uiMode)
   const analysis = useAppStore((s) => s.analysis)
+  const patternCode = useAppStore((s) => s.patternCode)
+  const patternPlaying = useAppStore((s) => s.patternPlaying)
+  const patternError: string | null = null // TODO: wire from engine errors if needed
+  const macros = useAppStore((s) => s.macros)
 
   // ---------- preset manager (singleton, no audio dependency) ----------
   if (!presetManagerRef.current) {
@@ -182,24 +171,20 @@ export default function App() {
   const applyPreset = useCallback(
     (preset: Preset) => {
       const store = useAppStore.getState()
+      const engine = strudelEngineRef.current
 
       // Audio
-      if (audioEngineRef.current) {
-        audioEngineRef.current.setSynthType(preset.audio.synthType as SynthType)
-      }
-      store.setSynthParams(preset.audio.synthParams)
-      // Effects: replace all
-      preset.audio.effects.forEach((eff, i) => {
-        store.setEffectBypass(i, eff.bypass)
-        store.setEffectWet(i, eff.wet)
-        for (const [key, val] of Object.entries(eff.params)) {
-          store.setEffectParam(i, key, val)
+      if (engine) {
+        engine.setPattern(preset.audio.pattern)
+        engine.setKeyboardConfig(preset.audio.keyboard)
+        for (const [name, value] of Object.entries(preset.audio.macros)) {
+          engine.setMacro(name, value)
         }
-      })
-      // Sequencer
-      if (preset.audio.sequencer) {
-        store.setSequencerBpm(preset.audio.sequencer.bpm)
-        store.setSequencerPattern(preset.audio.sequencer.pattern)
+      }
+      store.setPatternCode(preset.audio.pattern)
+      store.setPatternPlaying(true)
+      for (const [name, value] of Object.entries(preset.audio.macros)) {
+        store.setMacro(name as 'tone' | 'space' | 'intensity', value)
       }
 
       // Visual
@@ -298,36 +283,30 @@ export default function App() {
     const canvas = canvasRef.current
     if (!canvas) return
 
-    // 1. Audio
-    const audioEngine = new AudioEngine()
-    await audioEngine.start()
-    audioEngineRef.current = audioEngine
+    // 1. Strudel engine
+    const engine = new StrudelEngine()
+    await engine.start()
+    strudelEngineRef.current = engine
 
-    // 2. Hydra
+    // 2. Strudel analyser (taps Strudel's audio context)
+    const analyser = new StrudelAnalyser(engine.getAudioContext())
+    analyser.startLoop()
+    strudelAnalyserRef.current = analyser
+
+    // 3. Pattern bridge
+    const bridge = new PatternBridge()
+    patternBridgeRef.current = bridge
+
+    // 4. Hydra
     const hydraEngine = new HydraEngine(canvas)
     hydraEngineRef.current = hydraEngine
 
-    // 3. Mapping
+    // 5. Mapping
     const mappingEngine = new MappingEngine()
     mappingEngineRef.current = mappingEngine
 
-    // 4. Wire param getter
+    // 6. Wire param getter
     hydraEngine.setParamGetter((target, def) => mappingEngine.param(target, def))
-
-    // 5. Sequencer
-    const seq = new Sequencer()
-    seq.setNoteCallback((note, velocity) => audioEngine.noteOn(note, velocity))
-    seq.startListening()
-    sequencerRef.current = seq
-
-    // 6. MicInput
-    const mic = new MicInput()
-    const inputNode = audioEngine.getInputNode()
-    if (inputNode) {
-      mic.connectTo(inputNode)
-    }
-    mic.startListening()
-    micInputRef.current = mic
 
     // 7. Load preset from URL hash or slot 1
     const pm = presetManagerRef.current!
@@ -347,9 +326,9 @@ export default function App() {
 
     // 8. Keyboard handler
     const keyboard = new KeyboardHandler({
-      onNoteOn: (note, velocity) => audioEngine.noteOn(note, velocity),
-      onNoteOff: (note) => audioEngine.noteOff(note),
-      onPanic: () => audioEngine.panic(),
+      onNoteOn: (note, velocity) => engine.noteOn(note, velocity),
+      onNoteOff: (note) => engine.noteOff(note),
+      onPanic: () => engine.panic(),
       onToggleMode: () => {
         useAppStore.getState().toggleUIMode()
       },
@@ -365,23 +344,12 @@ export default function App() {
         const preset: Preset = {
           name: currentPresetRef.current?.name ?? `preset-${slot}`,
           audio: {
-            synthType: state.synthType,
-            synthParams: { ...state.synthParams },
-            effects: state.effects.map((e) => ({
-              ...e,
-              params: { ...e.params },
-            })),
-            sequencer: state.sequencer.playing
-              ? {
-                  pattern: [...state.sequencer.pattern],
-                  subdivision: state.sequencer.subdivision,
-                  bpm: state.sequencer.bpm,
-                }
-              : null,
+            pattern: state.patternCode,
+            keyboard: { s: 'sine', effects: '' },
+            macros: { ...state.macros },
           },
           visual: {
             chain: { ...chainRef.current },
-            customShaders: [],
           },
           mappings: state.mappings.map((m) => ({ ...m })),
           meta: {
@@ -409,6 +377,13 @@ export default function App() {
 
     // 10. rAF loop
     const tick = () => {
+      bridge.tick()
+      useAppStore.getState().setPatternData(
+        bridge.getCycle(),
+        bridge.getDensity(),
+        bridge.getOnset(),
+        bridge.getPatternNote()
+      )
       mappingEngine.tick()
       rafRef.current = requestAnimationFrame(tick)
     }
@@ -421,9 +396,8 @@ export default function App() {
       if (rafRef.current) cancelAnimationFrame(rafRef.current)
       keyboardRef.current?.detach()
       mouseRef.current?.detach()
-      sequencerRef.current?.dispose()
-      micInputRef.current?.dispose()
-      audioEngineRef.current?.dispose()
+      strudelAnalyserRef.current?.dispose()
+      strudelEngineRef.current?.dispose()
     }
   }, [])
 
@@ -500,91 +474,46 @@ export default function App() {
     [visualSource, visualSourceArgs, rebuildChain]
   )
 
-  // ---------- AudioPanel callbacks ----------
-  const handleSynthTypeChange = useCallback((type: string) => {
-    audioEngineRef.current?.setSynthType(type as SynthType)
-  }, [])
-
-  const handleSynthParamChange = useCallback((key: string, value: number) => {
-    useAppStore.getState().setSynthParams({ [key]: value })
-  }, [])
-
-  const handleEffectToggle = useCallback((index: number) => {
-    const current = useAppStore.getState().effects[index]
-    if (current) {
-      useAppStore.getState().setEffectBypass(index, !current.bypass)
-    }
-  }, [])
-
-  const handleEffectWetChange = useCallback((index: number, wet: number) => {
-    useAppStore.getState().setEffectWet(index, wet)
-  }, [])
-
-  const handleBpmChange = useCallback((bpm: number) => {
-    useAppStore.getState().setSequencerBpm(bpm)
-  }, [])
-
-  const handleToggleSequencer = useCallback(() => {
-    const state = useAppStore.getState()
-    state.setSequencerPlaying(!state.sequencer.playing)
-  }, [])
-
-  const handleToggleMic = useCallback(() => {
-    const state = useAppStore.getState()
-    state.setMicEnabled(!state.micEnabled)
-  }, [])
-
+  // ---------- Pattern / Macro callbacks ----------
   const handleToggleMode = useCallback(() => {
     useAppStore.getState().toggleUIMode()
   }, [])
 
-  const handleToneChange = useCallback((value: number) => {
-    setMacroTone(value)
-    const params = MacroEngine.computeTone(value)
-    const store = useAppStore.getState()
-    store.setEffectParam(0, 'frequency', params.filterFrequency)
-    store.setEffectParam(0, 'Q', params.filterQ)
-    store.setSynthParams({ decay: params.decay })
+  const handlePatternChange = useCallback((code: string) => {
+    useAppStore.getState().setPatternCode(code)
   }, [])
 
-  const handleSpaceChange = useCallback((value: number) => {
-    setMacroSpace(value)
-    const params = MacroEngine.computeSpace(value)
-    const store = useAppStore.getState()
-    store.setEffectBypass(1, params.reverbBypass)
-    store.setEffectWet(1, params.reverbWet)
-    store.setEffectBypass(2, params.delayBypass)
-    store.setEffectWet(2, params.delayWet)
-    store.setEffectParam(2, 'feedback', params.delayFeedback)
+  const handleEvaluatePattern = useCallback(() => {
+    const engine = strudelEngineRef.current
+    if (!engine) return
+    const code = useAppStore.getState().patternCode
+    engine.setPattern(code)
+    useAppStore.getState().setPatternPlaying(true)
   }, [])
 
-  const handleIntensityChange = useCallback((value: number) => {
-    setMacroIntensity(value)
-    const params = MacroEngine.computeIntensity(value, visualSource)
-    const key = MacroEngine.getSourcePrimaryKey(visualSource)
-    handleSourceArgChange(key, params.sourcePrimary)
-  }, [visualSource, handleSourceArgChange])
+  const handleStopPattern = useCallback(() => {
+    strudelEngineRef.current?.stop()
+    useAppStore.getState().setPatternPlaying(false)
+  }, [])
 
-  const handleMorphChange = useCallback((value: number) => {
-    setMacroMorph(value)
-    const params = MacroEngine.computeMorph(value)
-    setVisualTransforms((prev) => {
-      const next = [...prev]
-      const updateOrAdd = (fn: string, key: string, val: number) => {
-        const idx = next.findIndex((t) => t.fn === fn)
-        if (idx >= 0) {
-          next[idx] = { ...next[idx], args: { ...next[idx].args, [key]: val } }
-        } else if (val > 0.01) {
-          next.push({ fn, args: { [key]: val } })
-        }
+  const handleTogglePattern = useCallback(() => {
+    const playing = useAppStore.getState().patternPlaying
+    if (playing) {
+      strudelEngineRef.current?.stop()
+      useAppStore.getState().setPatternPlaying(false)
+    } else {
+      const code = useAppStore.getState().patternCode
+      if (code) {
+        strudelEngineRef.current?.setPattern(code)
       }
-      updateOrAdd('hue', 'amount', params.hue)
-      updateOrAdd('colorama', 'amount', params.colorama)
-      updateOrAdd('rotate', 'angle', params.rotate)
-      rebuildChain(visualSource, visualSourceArgs, next)
-      return next
-    })
-  }, [visualSource, visualSourceArgs, rebuildChain])
+      useAppStore.getState().setPatternPlaying(true)
+    }
+  }, [])
+
+  const handleMacroChange = useCallback((name: 'tone' | 'space' | 'intensity', value: number) => {
+    strudelEngineRef.current?.setMacro(name, value)
+    useAppStore.getState().setMacro(name, value)
+  }, [])
 
   const handleVisualGroupChange = useCallback((group: string) => {
     setVisualGroup(group)
@@ -702,38 +631,46 @@ export default function App() {
       {started && (
         <>
           <HUD
-            bpm={sequencer.bpm}
+            bpm={0}
             presetName={currentPreset?.name ?? ''}
             audioLevel={analysis.envelope}
             panelOpen={panelOpen}
-            sequencerPlaying={sequencer.playing}
+            sequencerPlaying={patternPlaying}
             uiMode={uiMode}
             onToggleMode={handleToggleMode}
             onShowHelp={handleShowHelp}
           />
 
-          <ControlPanel open={panelOpen} uiMode={uiMode} onToggleMode={handleToggleMode}>
+          <ControlPanel
+            open={panelOpen}
+            uiMode={uiMode}
+            onToggleMode={handleToggleMode}
+            patternCode={patternCode}
+            onPatternChange={handlePatternChange}
+            onEvaluatePattern={handleEvaluatePattern}
+            onStopPattern={handleStopPattern}
+            patternPlaying={patternPlaying}
+            patternError={patternError}
+            macros={macros}
+            onMacroChange={handleMacroChange}
+          >
             {uiMode === 'simple' ? (
               <SimplePanel
                 presetNames={presetSlots.map((name, i) => name ?? `Slot ${i + 1}`)}
                 activePresetIndex={activeSlot}
                 onPresetSelect={handlePresetSelect}
-                synthType={synthType}
-                onSynthTypeChange={handleSynthTypeChange}
-                tone={macroTone}
-                onToneChange={handleToneChange}
-                space={macroSpace}
-                onSpaceChange={handleSpaceChange}
+                tone={macros.tone}
+                onToneChange={(v) => handleMacroChange('tone', v)}
+                space={macros.space}
+                onSpaceChange={(v) => handleMacroChange('space', v)}
                 visualGroup={visualGroup}
                 onVisualGroupChange={handleVisualGroupChange}
-                intensity={macroIntensity}
-                onIntensityChange={handleIntensityChange}
-                morph={macroMorph}
-                onMorphChange={handleMorphChange}
-                bpm={sequencer.bpm}
-                onBpmChange={handleBpmChange}
-                sequencerPlaying={sequencer.playing}
-                onToggleSequencer={handleToggleSequencer}
+                intensity={macros.intensity}
+                onIntensityChange={(v) => handleMacroChange('intensity', v)}
+                bpm={0}
+                onBpmChange={() => {}}
+                patternPlaying={patternPlaying}
+                onTogglePattern={handleTogglePattern}
               />
             ) : (
               <>
@@ -744,21 +681,6 @@ export default function App() {
                   onExport={handleExport}
                   onImport={handleImport}
                   onCopyURL={handleCopyURL}
-                />
-                <AudioPanel
-                  synthType={synthType}
-                  onSynthTypeChange={handleSynthTypeChange}
-                  synthParams={synthParams}
-                  onSynthParamChange={handleSynthParamChange}
-                  effects={effects.map((e) => ({ type: e.type, bypass: e.bypass, wet: e.wet }))}
-                  onEffectToggle={handleEffectToggle}
-                  onEffectWetChange={handleEffectWetChange}
-                  bpm={sequencer.bpm}
-                  onBpmChange={handleBpmChange}
-                  sequencerPlaying={sequencer.playing}
-                  onToggleSequencer={handleToggleSequencer}
-                  micEnabled={micEnabled}
-                  onToggleMic={handleToggleMic}
                 />
                 <VisualPanel
                   source={visualSource}

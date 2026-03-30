@@ -60,11 +60,11 @@ export class KeyboardHandler {
 
       if (isTyping) return
 
-      // Space: toggle sequencer
+      // Space: toggle pattern playback
       if (e.key === ' ') {
         e.preventDefault()
-        const seq = useAppStore.getState().sequencer
-        useAppStore.getState().setSequencerPlaying(!seq.playing)
+        const state = useAppStore.getState()
+        state.setPatternPlaying(!state.patternPlaying)
         return
       }
 
