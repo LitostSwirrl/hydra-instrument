@@ -33,7 +33,7 @@ export class PresetManager {
         const first = parsed.find((p) => p !== null)
         if (
           first &&
-          'synthType' in (first.audio as Record<string, unknown>)
+          'synthType' in (first.audio as unknown as Record<string, unknown>)
         ) {
           // Old format - clear and use defaults
           this.slots = new Array(6).fill(null)
