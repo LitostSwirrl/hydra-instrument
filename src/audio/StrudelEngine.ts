@@ -45,9 +45,11 @@ export class StrudelEngine {
   setPattern(code: string): void {
     this.ensureInitialized()
     try {
-      void evaluate(code, true)
+      evaluate(code, true).catch((err: unknown) => {
+        console.error('[StrudelEngine] pattern evaluation failed:', err)
+      })
     } catch (err) {
-      console.error('[StrudelEngine] pattern evaluation failed:', err)
+      console.error('[StrudelEngine] pattern evaluation failed (sync):', err)
     }
   }
 
@@ -75,12 +77,9 @@ export class StrudelEngine {
     }
     pattern += '.play()'
 
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-implied-eval
-      new Function(pattern)()
-    } catch (err) {
+    evaluate(pattern, true).catch((err: unknown) => {
       console.error('[StrudelEngine] noteOn failed:', err)
-    }
+    })
   }
 
   /**
