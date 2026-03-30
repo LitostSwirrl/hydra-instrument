@@ -23,6 +23,22 @@ describe('resolveSource', () => {
   it('returns 0 for unknown', () => {
     expect(resolveSource('unknown', useAppStore.getState())).toBe(0)
   })
+  it('should resolve cycle source', () => {
+    useAppStore.getState().setPatternData(0.75, 0, 0, 0)
+    expect(resolveSource('cycle', useAppStore.getState())).toBe(0.75)
+  })
+  it('should resolve onset source', () => {
+    useAppStore.getState().setPatternData(0, 0, 1, 0)
+    expect(resolveSource('onset', useAppStore.getState())).toBe(1)
+  })
+  it('should resolve density source', () => {
+    useAppStore.getState().setPatternData(0, 0.5, 0, 0)
+    expect(resolveSource('density', useAppStore.getState())).toBe(0.5)
+  })
+  it('should resolve patternNote source', () => {
+    useAppStore.getState().setPatternData(0, 0, 0, 0.6)
+    expect(resolveSource('patternNote', useAppStore.getState())).toBe(0.6)
+  })
 })
 
 describe('applyCurve', () => {

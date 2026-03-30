@@ -10,6 +10,10 @@ export function resolveSource(sourceId: string, state: AppState): number {
     case 'mouse.x': return state.mouse.x
     case 'mouse.y': return state.mouse.y
     case 'sequencerStep': return state.sequencerStep
+    case 'cycle': return state.cycle
+    case 'density': return state.density
+    case 'onset': return state.onset
+    case 'patternNote': return state.patternNote
     default: return 0
   }
 }
