@@ -296,9 +296,19 @@ export default function App() {
     analyser.startLoop()
     strudelAnalyserRef.current = analyser
 
-    // 3. Pattern bridge
+    // 3. Pattern bridge (wired to Strudel's onTrigger via engine callback)
     const bridge = new PatternBridge()
     patternBridgeRef.current = bridge
+
+    engine.setTriggerCallback((hap: unknown) => {
+      const h = hap as { value?: { note?: string }; whole?: { begin: number; end: number } }
+      if (h.whole) {
+        bridge.handleTrigger({
+          value: { note: h.value?.note },
+          whole: { begin: h.whole.begin, end: h.whole.end },
+        })
+      }
+    })
 
     // 4. Hydra
     const hydraEngine = new HydraEngine(canvas)

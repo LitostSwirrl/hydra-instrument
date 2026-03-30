@@ -23,6 +23,7 @@ export class StrudelEngine {
   private initialized = false
   private activeNotes = new Map<string, boolean>()
   private keyboardConfig: KeyboardConfig = { s: 'sine', effects: '' }
+  private triggerCallback: ((hap: unknown) => void) | null = null
 
   async start(): Promise<void> {
     if (this.initialized) return
@@ -41,16 +42,29 @@ export class StrudelEngine {
    * Evaluate and play a Strudel pattern.
    * Uses the built-in evaluate() which handles the transpiler and mini-notation.
    * Pattern code can reference macros (tone, space, intensity) set via setMacro().
+   * If a triggerCallback is set, wraps the pattern with .onTrigger() so PatternBridge
+   * receives hap events. dominantTrigger=false keeps superdough audio output active.
    */
   setPattern(code: string): void {
     this.ensureInitialized()
     try {
-      evaluate(code, true).catch((err: unknown) => {
+      // Wrap pattern with onTrigger to feed PatternBridge
+      // dominantTrigger=false keeps superdough audio output active
+      const wrappedCode = this.triggerCallback
+        ? `(${code}).onTrigger((hap) => globalThis.__strudelTrigger?.(hap), false)`
+        : code
+      evaluate(wrappedCode, true).catch((err: unknown) => {
         console.error('[StrudelEngine] pattern evaluation failed:', err)
       })
     } catch (err) {
       console.error('[StrudelEngine] pattern evaluation failed (sync):', err)
     }
+  }
+
+  /** Set a callback that fires on every Strudel hap event (for PatternBridge). */
+  setTriggerCallback(cb: (hap: unknown) => void): void {
+    this.triggerCallback = cb
+    globalRef.__strudelTrigger = cb
   }
 
   stop(): void {
