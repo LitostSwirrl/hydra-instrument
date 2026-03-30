@@ -39,29 +39,29 @@ const dendrite = {
       if (d > depth) break;
       float freq = branches * pow(2.0, d - 1.0);
       float branchAngle = mod(a + time * pulse * 0.1 / d, 6.2832 / freq) - 3.1416 / freq;
-      float branchDist = abs(branchAngle * r * freq * 0.15);
-      float rMin = (d - 1.0) * 0.08 + 0.02;
-      float rMax = d * 0.12 + 0.05;
-      float radialMask = smoothstep(rMin, rMin + 0.02, r) * smoothstep(rMax + 0.02, rMax, r);
-      float thickness = 0.008 / d;
-      float line = smoothstep(thickness * 2.0, 0.0, branchDist) * radialMask;
-      col += line * (0.35 / d);
+      float branchDist = abs(branchAngle * r * freq * 0.12);
+      float rMin = (d - 1.0) * 0.07 + 0.01;
+      float rMax = d * 0.14 + 0.06;
+      float radialMask = smoothstep(rMin, rMin + 0.03, r) * smoothstep(rMax + 0.03, rMax, r);
+      float thickness = 0.012 / d;
+      float line = smoothstep(thickness * 2.5, 0.0, branchDist) * radialMask;
+      col += line * (0.6 / d);
     }
-    float centerGlow = exp(-r * 8.0) * 0.15 * (0.8 + 0.2 * sin(time * pulse));
+    float centerGlow = exp(-r * 6.0) * 0.25 * (0.8 + 0.2 * sin(time * pulse));
     col += centerGlow;
-    float nodeRing = smoothstep(0.003, 0.0, abs(r - 0.02));
-    col += nodeRing * 0.4;
+    float nodeRing = smoothstep(0.004, 0.0, abs(r - 0.02));
+    col += nodeRing * 0.6;
     for (float i = 0.0; i < 5.0; i++) {
       if (i >= branches) break;
       float na = i * 6.2832 / branches + time * pulse * 0.1;
       for (float d = 1.0; d <= 3.0; d++) {
-        float nr = d * 0.12;
+        float nr = d * 0.14;
         vec2 np = vec2(cos(na), sin(na)) * nr;
         float nd = length(st - np);
-        col += smoothstep(0.006, 0.0, nd) * (0.3 / d);
+        col += smoothstep(0.008, 0.0, nd) * (0.5 / d);
       }
     }
-    return vec4(vec3(col), 1.0);
+    return vec4(vec3(min(col, 1.0)), 1.0);
   `,
 }
 
@@ -195,9 +195,9 @@ const spore = {
       pos.y += cos(time * drift * (h1 - 0.5) * 2.0 + h2 * 6.28) * 0.15;
       pos = fract(pos);
       float d = length(st - pos);
-      float size = 0.003 + h3 * 0.004;
-      col += smoothstep(size, 0.0, d) * 0.5;
-      col += exp(-d * 100.0) * 0.04;
+      float size = 0.005 + h3 * 0.006;
+      col += smoothstep(size, 0.0, d) * 0.6;
+      col += exp(-d * 60.0) * 0.08;
       vec2 vel = vec2(
         cos(time * drift * (h3 - 0.5) * 2.0 + h1 * 6.28),
         -sin(time * drift * (h1 - 0.5) * 2.0 + h2 * 6.28)
@@ -210,7 +210,7 @@ const spore = {
         col += smoothstep(trailSize, 0.0, td) * 0.08 * (1.0 - t / 7.0);
       }
     }
-    float ambient = exp(-length(st - 0.5) * 3.0) * 0.015;
+    float ambient = exp(-length(st - 0.5) * 2.5) * 0.025;
     col += ambient;
     return vec4(vec3(min(col, 1.0)), 1.0);
   `,

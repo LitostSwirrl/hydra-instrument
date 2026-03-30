@@ -111,6 +111,13 @@ export function IntroGuide({ visible, onComplete }: IntroGuideProps) {
   const [step, setStep] = useState(0)
   const [fading, setFading] = useState(false)
 
+  useEffect(() => {
+    if (visible) {
+      setStep(0)
+      setFading(false)
+    }
+  }, [visible])
+
   const dismiss = useCallback(() => {
     setFading(true)
     setTimeout(() => {

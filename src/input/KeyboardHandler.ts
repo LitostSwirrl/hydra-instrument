@@ -70,7 +70,7 @@ export class KeyboardHandler {
 
       // Number keys: presets
       const num = parseInt(e.key, 10)
-      if (num >= 1 && num <= 9) {
+      if (num >= 1 && num <= 6) {
         if (e.shiftKey) {
           this.callbacks.onSavePreset(num)
         } else {

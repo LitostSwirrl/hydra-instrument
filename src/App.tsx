@@ -616,7 +616,7 @@ export default function App() {
   // ---------- PresetBar callbacks ----------
   const presetSlots: (string | null)[] = presetManagerRef.current
     ? presetManagerRef.current.getAllSlots().map((p) => p?.name ?? null)
-    : new Array(9).fill(null)
+    : new Array(6).fill(null)
 
   const handlePresetSelect = useCallback(
     (slotIndex: number) => {
@@ -676,6 +676,10 @@ export default function App() {
     setShowIntro(false)
   }, [])
 
+  const handleShowHelp = useCallback(() => {
+    setShowIntro(true)
+  }, [])
+
   // ---------- render ----------
   return (
     <>
@@ -705,6 +709,7 @@ export default function App() {
             sequencerPlaying={sequencer.playing}
             uiMode={uiMode}
             onToggleMode={handleToggleMode}
+            onShowHelp={handleShowHelp}
           />
 
           <ControlPanel open={panelOpen} uiMode={uiMode} onToggleMode={handleToggleMode}>

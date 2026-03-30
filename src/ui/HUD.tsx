@@ -8,6 +8,7 @@ interface HUDProps {
   sequencerPlaying: boolean
   uiMode: 'simple' | 'pro'
   onToggleMode: () => void
+  onShowHelp: () => void
 }
 
 export function HUD({
@@ -18,6 +19,7 @@ export function HUD({
   sequencerPlaying,
   uiMode,
   onToggleMode,
+  onShowHelp,
 }: HUDProps) {
   const [hintVisible, setHintVisible] = useState(true)
   const [hovered, setHovered] = useState(false)
@@ -67,8 +69,31 @@ export function HUD({
           </span>
         </button>
       </div>
-      <div style={{ position: 'fixed', bottom: '16px', right: '16px', opacity: hintVisible ? 1 : 0, transition: 'opacity 600ms ease', pointerEvents: 'none' }}>
-        <span style={{ fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#999999', fontFamily: 'monospace' }}>tab</span>
+      <div style={{ position: 'fixed', bottom: '16px', right: '16px', display: 'flex', gap: '12px', alignItems: 'center' }}>
+        <button
+          onClick={onShowHelp}
+          tabIndex={-1}
+          style={{
+            background: 'none',
+            border: '1px solid rgba(255,255,255,0.15)',
+            borderRadius: '50%',
+            width: '22px',
+            height: '22px',
+            cursor: 'pointer',
+            fontSize: '11px',
+            fontFamily: 'monospace',
+            color: '#999999',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 0,
+            opacity: hovered ? 1 : 0.4,
+            transition: 'opacity 300ms ease',
+          }}
+        >
+          ?
+        </button>
+        <span style={{ fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#999999', fontFamily: 'monospace', opacity: hintVisible ? 1 : 0, transition: 'opacity 600ms ease', pointerEvents: 'none' }}>tab</span>
       </div>
     </div>
   )

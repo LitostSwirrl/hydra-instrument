@@ -4,7 +4,7 @@ import { defaultPresets } from './defaults'
 const STORAGE_KEY = 'hydra-instrument-presets'
 
 export class PresetManager {
-  private slots: (Preset | null)[] = new Array(9).fill(null)
+  private slots: (Preset | null)[] = new Array(6).fill(null)
 
   constructor() {
     this.loadFromStorage()
@@ -27,7 +27,10 @@ export class PresetManager {
   private loadFromStorage(): void {
     try {
       const json = localStorage.getItem(STORAGE_KEY)
-      if (json) this.slots = JSON.parse(json)
+      if (json) {
+        const parsed = JSON.parse(json) as (Preset | null)[]
+        this.slots = parsed.slice(0, 6)
+      }
     } catch { /* ignore corrupt data */ }
   }
 
@@ -65,7 +68,7 @@ export class PresetManager {
   }
 
   resetToDefaults(): void {
-    this.slots = new Array(9).fill(null)
+    this.slots = new Array(6).fill(null)
     this.ensureDefaults()
     this.saveToStorage()
   }
