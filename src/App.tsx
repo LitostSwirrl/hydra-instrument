@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useAppStore, Mapping } from './state/store'
-import { getSuperdoughAudioController } from '@strudel/web'
 import { StrudelEngine } from './audio/StrudelEngine'
 import { StrudelAnalyser } from './audio/StrudelAnalyser'
 import { PatternBridge } from './audio/PatternBridge'
@@ -292,6 +291,7 @@ export default function App() {
 
     // 2. Strudel analyser (taps Strudel's audio output via superdough)
     const analyser = new StrudelAnalyser(engine.getAudioContext())
+    const { getSuperdoughAudioController } = await import('@strudel/web')
     const controller = getSuperdoughAudioController()
     analyser.connectSource(controller.output.destinationGain)
     analyser.startLoop()

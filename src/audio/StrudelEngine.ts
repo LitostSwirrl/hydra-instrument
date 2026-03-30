@@ -1,5 +1,3 @@
-import { initStrudel, hush, evaluate, getAudioContext } from '@strudel/web'
-
 interface KeyboardConfig {
   s: string
   effects: string
@@ -26,11 +24,14 @@ export class StrudelEngine {
   private triggerCallback: ((hap: unknown) => void) | null = null
   private errorCallback: ((error: string) => void) | null = null
   private repl: { setCps: (cps: number) => void } | null = null
+  private strudelModule: Awaited<typeof import('@strudel/web')> | null = null
 
   async start(): Promise<void> {
     if (this.initialized) return
 
-    const repl = await initStrudel()
+    const mod = await import('@strudel/web')
+    this.strudelModule = mod
+    const repl = await mod.initStrudel()
     this.repl = repl
 
     // Set default macros on globalThis so pattern code can reference them
@@ -56,7 +57,7 @@ export class StrudelEngine {
       const wrappedCode = this.triggerCallback
         ? `(${code}).onTrigger((hap) => globalThis.__strudelTrigger?.(hap), false)`
         : code
-      evaluate(wrappedCode, true).catch((err: unknown) => {
+      this.strudelModule!.evaluate(wrappedCode, true).catch((err: unknown) => {
         const msg = err instanceof Error ? err.message : String(err)
         console.error('[StrudelEngine] pattern evaluation failed:', msg)
         this.errorCallback?.(msg)
@@ -81,7 +82,7 @@ export class StrudelEngine {
 
   stop(): void {
     try {
-      hush()
+      this.strudelModule?.hush()
     } catch (err) {
       console.error('[StrudelEngine] stop failed:', err)
     }
@@ -103,7 +104,7 @@ export class StrudelEngine {
     }
     pattern += '.play()'
 
-    evaluate(pattern, true).catch((err: unknown) => {
+    this.strudelModule!.evaluate(pattern, true).catch((err: unknown) => {
       console.error('[StrudelEngine] noteOn failed:', err)
     })
   }
@@ -142,7 +143,7 @@ export class StrudelEngine {
   /** Returns the Web Audio AudioContext. Throws if not initialized. */
   getAudioContext(): AudioContext {
     this.ensureInitialized()
-    const ctx = getAudioContext()
+    const ctx = this.strudelModule!.getAudioContext()
     if (!ctx) {
       throw new Error('[StrudelEngine] AudioContext not available')
     }
