@@ -72,6 +72,9 @@ export interface AppState {
 
   bpm: number
   setBpm: (bpm: number) => void
+
+  patternError: string | null
+  setPatternError: (error: string | null) => void
 }
 
 const initialState = {
@@ -103,6 +106,8 @@ const initialState = {
   patternNote: 0,
 
   bpm: 120,
+
+  patternError: null as string | null,
 }
 
 export const useAppStore = create<AppState>()(
@@ -143,9 +148,18 @@ export const useAppStore = create<AppState>()(
     setPatternData: (cycle, density, onset, patternNote) =>
       set({ cycle, density, onset, patternNote }),
     setBpm: (bpm) => set({ bpm: Math.max(20, Math.min(300, bpm)) }),
+    setPatternError: (error) => set({ patternError: error }),
   }))
 )
 
-// expose getInitialState for test resets
-;(useAppStore as unknown as { getInitialState: () => typeof initialState }).getInitialState =
-  () => ({ ...initialState, analysis: { ...initialState.analysis, fftBands: new Array(8).fill(0) as number[] }, mappings: [], mouse: { ...initialState.mouse }, ui: { ...initialState.ui }, uiMode: 'simple' as UIMode, macros: { ...initialState.macros } })
+export function getInitialState() {
+  return {
+    ...initialState,
+    analysis: { ...initialState.analysis, fftBands: new Array(8).fill(0) as number[] },
+    mappings: [] as Mapping[],
+    mouse: { ...initialState.mouse },
+    ui: { ...initialState.ui },
+    uiMode: 'simple' as UIMode,
+    macros: { ...initialState.macros },
+  }
+}

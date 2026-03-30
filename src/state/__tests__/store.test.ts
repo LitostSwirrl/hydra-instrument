@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { useAppStore } from '../store'
+import { useAppStore, getInitialState } from '../store'
 
 beforeEach(() => {
-  useAppStore.setState(useAppStore.getInitialState())
+  useAppStore.setState(getInitialState())
 })
 
 describe('store', () => {
