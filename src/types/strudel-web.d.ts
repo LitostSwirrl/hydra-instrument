@@ -1,6 +1,9 @@
 declare module '@strudel/web' {
   interface StrudelRepl {
     setCps: (cps: number) => void
+    stop: () => void
+    start: () => void
+    scheduler: { now: () => number; cps: number }
   }
   export function initStrudel(options?: Record<string, unknown>): Promise<StrudelRepl>
   export function hush(): void
@@ -14,6 +17,7 @@ declare module '@strudel/web' {
   }
   interface SuperdoughAudioController {
     output: SuperdoughOutput
+    reset: () => void
   }
   export function getSuperdoughAudioController(): SuperdoughAudioController
 }
