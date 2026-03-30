@@ -375,6 +375,7 @@ export default function App() {
         currentPresetRef.current = preset
         setActiveSlot(slot - 1)
       },
+      onTogglePattern: handleTogglePattern,
     })
     keyboard.attach()
     keyboardRef.current = keyboard

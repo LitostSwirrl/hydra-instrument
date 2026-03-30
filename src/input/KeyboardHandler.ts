@@ -27,6 +27,7 @@ interface KeyboardCallbacks {
   onLoadPreset: (slot: number) => void
   onSavePreset: (slot: number) => void
   onToggleMode: () => void
+  onTogglePattern: () => void
 }
 
 export class KeyboardHandler {
@@ -63,8 +64,7 @@ export class KeyboardHandler {
       // Space: toggle pattern playback
       if (e.key === ' ') {
         e.preventDefault()
-        const state = useAppStore.getState()
-        state.setPatternPlaying(!state.patternPlaying)
+        this.callbacks.onTogglePattern()
         return
       }
 
