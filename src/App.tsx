@@ -63,11 +63,11 @@ const TRANSFORM_ARG_DEFAULTS: Record<string, Record<string, number>> = {
 }
 
 const VISUAL_GROUP_TO_SOURCE: Record<string, string> = {
-  Geometry: 'dendrite',
-  Mask: 'weave',
-  Fire: 'pulse',
-  Particles: 'spore',
-  Flow: 'mycelium',
+  Geometry: 'shape',
+  Mask: 'voronoi',
+  Fire: 'noise',
+  Particles: 'osc',
+  Flow: 'gradient',
 }
 
 type ChainArg = number | string | ChainNode
