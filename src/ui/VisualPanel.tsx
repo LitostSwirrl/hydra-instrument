@@ -5,6 +5,7 @@ import { Dropdown } from './widgets/Dropdown'
 interface Transform {
   fn: string
   args: Record<string, number>
+  mappedTargets?: Record<string, string>
 }
 
 interface VisualPanelProps {
@@ -217,18 +218,60 @@ export function VisualPanel({
                         x
                       </button>
                     </div>
-                    {tParams.map((param) => (
-                      <Slider
-                        key={param.key}
-                        label={param.label}
-                        value={transform.args[param.key] ?? 0}
-                        min={param.min}
-                        max={param.max}
-                        step={param.step}
-                        onChange={(v) => onTransformArgChange(i, param.key, v)}
-                        accentColor="#B0B8C4"
-                      />
-                    ))}
+                    {tParams.map((param) => {
+                      const mappedTarget = transform.mappedTargets?.[param.key]
+                      if (mappedTarget) {
+                        return (
+                          <div
+                            key={param.key}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '8px',
+                            }}
+                          >
+                            <span
+                              style={{
+                                fontSize: '11px',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.05em',
+                                color: '#cccccc',
+                                fontFamily: 'sans-serif',
+                                whiteSpace: 'nowrap',
+                                flexShrink: 0,
+                              }}
+                            >
+                              {param.label}
+                            </span>
+                            <span
+                              style={{
+                                padding: '2px 8px',
+                                backgroundColor: 'rgba(136,144,160,0.2)',
+                                borderRadius: '3px',
+                                fontSize: '10px',
+                                fontFamily: 'monospace',
+                                color: '#8890A0',
+                                whiteSpace: 'nowrap',
+                              }}
+                            >
+                              mapped: {mappedTarget}
+                            </span>
+                          </div>
+                        )
+                      }
+                      return (
+                        <Slider
+                          key={param.key}
+                          label={param.label}
+                          value={transform.args[param.key] ?? 0}
+                          min={param.min}
+                          max={param.max}
+                          step={param.step}
+                          onChange={(v) => onTransformArgChange(i, param.key, v)}
+                          accentColor="#B0B8C4"
+                        />
+                      )
+                    })}
                   </div>
                 )
               })}

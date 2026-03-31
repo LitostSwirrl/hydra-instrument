@@ -26,6 +26,7 @@ import { IntroGuide } from './ui/IntroGuide'
 interface VisualTransformUI {
   fn: string
   args: Record<string, number>
+  mappedTargets: Record<string, string>
 }
 
 const SOURCE_ARG_KEYS: Record<string, string[]> = {
@@ -140,10 +141,22 @@ function chainToVisualUI(chain: HydraChainConfig): {
   return {
     source: chain.source.fn,
     sourceArgs: positionalToNamed(chain.source.fn, chain.source.args, SOURCE_ARG_KEYS),
-    transforms: chain.transforms.map((t) => ({
-      fn: t.fn,
-      args: positionalToNamed(t.fn, t.args, TRANSFORM_ARG_KEYS, TRANSFORM_SOURCE_COUNT[t.fn] ?? 0),
-    })),
+    transforms: chain.transforms.map((t) => {
+      const keys = TRANSFORM_ARG_KEYS[t.fn] ?? []
+      const offset = TRANSFORM_SOURCE_COUNT[t.fn] ?? 0
+      const mappedTargets: Record<string, string> = {}
+      keys.forEach((key, i) => {
+        const arg = t.args[i + offset]
+        if (typeof arg === 'string') {
+          mappedTargets[key] = arg
+        }
+      })
+      return {
+        fn: t.fn,
+        args: positionalToNamed(t.fn, t.args, TRANSFORM_ARG_KEYS, TRANSFORM_SOURCE_COUNT[t.fn] ?? 0),
+        mappedTargets,
+      }
+    }),
   }
 }
 
@@ -507,7 +520,7 @@ export default function App() {
   const handleAddTransform = useCallback(
     (fn: string) => {
       setVisualTransforms((prev) => {
-        const next = [...prev, { fn, args: { ...(TRANSFORM_ARG_DEFAULTS[fn] ?? {}) } }]
+        const next = [...prev, { fn, args: { ...(TRANSFORM_ARG_DEFAULTS[fn] ?? {}) }, mappedTargets: {} }]
         rebuildChain(visualSource, visualSourceArgs, next)
         return next
       })
