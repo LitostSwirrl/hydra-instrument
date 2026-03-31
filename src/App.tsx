@@ -16,7 +16,7 @@ import { PresetBar } from './ui/PresetBar'
 import { VisualPanel } from './ui/VisualPanel'
 import { MappingPanel } from './ui/MappingPanel'
 import { SimplePanel } from './ui/SimplePanel'
-import { IntroGuide } from './ui/IntroGuide'
+import { InteractiveIntro, InteractiveIntroRef } from './ui/InteractiveIntro'
 
 // ---------- helpers for VisualPanel bridge ----------
 // VisualPanel works with named args (Record<string, number>), but HydraChainConfig
@@ -164,6 +164,7 @@ export default function App() {
   const keyboardRef = useRef<KeyboardHandler | null>(null)
   const mouseRef = useRef<MouseHandler | null>(null)
   const presetManagerRef = useRef<PresetManager | null>(null)
+  const introRef = useRef<InteractiveIntroRef>(null)
   const rafRef = useRef<number>(0)
 
   const [started, setStarted] = useState(false)
@@ -383,7 +384,10 @@ export default function App() {
 
     // 8. Keyboard handler
     const keyboard = new KeyboardHandler({
-      onNoteOn: (note, velocity) => engine.noteOn(note, velocity),
+      onNoteOn: (note, velocity) => {
+        engine.noteOn(note, velocity)
+        introRef.current?.notePlayed()
+      },
       onNoteOff: (note) => engine.noteOff(note),
       onPanic: () => engine.panic(),
       onToggleMode: () => {
@@ -626,6 +630,7 @@ export default function App() {
       if (preset) {
         applyPreset(preset)
         setActiveSlot(slotIndex)
+        introRef.current?.presetChanged()
       }
     },
     [applyPreset]
@@ -697,7 +702,7 @@ export default function App() {
 
       <StartOverlay visible={!started} onStart={handleStart} />
 
-      <IntroGuide visible={started && showIntro} onComplete={handleIntroDone} />
+      <InteractiveIntro ref={introRef} visible={started && showIntro} onComplete={handleIntroDone} />
 
       {started && (
         <>
