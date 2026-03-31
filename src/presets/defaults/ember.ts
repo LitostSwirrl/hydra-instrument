@@ -17,28 +17,20 @@ export const emberPreset: Preset = {
           fn: 'modulate',
           args: [
             {
-              fn: 'osc',
-              args: [-1000, -1],
+              fn: 'noise',
+              args: [3, 0.5],
               transforms: [
                 {
                   fn: 'modulate',
-                  args: [
-                    {
-                      fn: 'osc',
-                      args: [],
-                      transforms: [{ fn: 'luma', args: [] }],
-                    },
-                  ],
+                  args: [{ fn: 'noise', args: [2, 0.3] }, 0.2],
                 },
               ],
             },
             'ember.mod',
           ],
         },
-        { fn: 'blend', args: [{ fn: 'src', args: ['o0'] }] },
-        { fn: 'blend', args: [{ fn: 'src', args: ['o0'] }] },
-        { fn: 'blend', args: [{ fn: 'src', args: ['o0'] }] },
-        { fn: 'brightness', args: [0.05] },
+        { fn: 'blend', args: [{ fn: 'src', args: ['o0'] }, 0.93] },
+        { fn: 'brightness', args: [0.03] },
         { fn: 'scale', args: [1.01] },
       ],
       output: 'o0',

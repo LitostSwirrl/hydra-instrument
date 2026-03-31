@@ -23,6 +23,11 @@ export const ritualPreset: Preset = {
             },
           ],
         },
+        { fn: 'pixelate', args: [2, 20] },
+        {
+          fn: 'modulate',
+          args: [{ fn: 'noise', args: [2.5] }, 0.08],
+        },
         { fn: 'blend', args: [{ fn: 'src', args: ['o0'] }, 0.92] },
         {
           fn: 'modulateScale',

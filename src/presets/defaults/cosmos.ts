@@ -10,25 +10,19 @@ export const cosmosPreset: Preset = {
   },
   visual: {
     chain: {
-      source: { fn: 'osc', args: [60, -0.015, 0.3] },
+      source: { fn: 'shape', args: [20, 0.2, 0.3] },
       transforms: [
         {
-          fn: 'diff',
-          args: [
-            {
-              fn: 'osc',
-              args: [60, 0.08],
-              transforms: [{ fn: 'rotate', args: [1.5708] }],
-            },
-          ],
+          fn: 'modulate',
+          args: [{ fn: 'noise', args: [2, 0.3] }, 0.15],
         },
         {
           fn: 'modulateScale',
-          args: [{ fn: 'noise', args: [3.5, 0.25] }, 0.6],
+          args: [{ fn: 'osc', args: [3, 0.5] }, -0.6],
         },
         { fn: 'invert', args: [] },
         { fn: 'brightness', args: [0.1] },
-        { fn: 'contrast', args: [1.2] },
+        { fn: 'contrast', args: [1.3] },
         { fn: 'blend', args: [{ fn: 'src', args: ['o0'] }, 0.92] },
         { fn: 'scale', args: [0.999] },
       ],
