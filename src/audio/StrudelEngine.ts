@@ -90,7 +90,8 @@ export class StrudelEngine {
 
   /**
    * Inject a one-shot note using the current keyboard config synth and effects.
-   * Builds a pattern string like: note("c3").s("sine").gain(0.8).play()
+   * Uses evaluate(code, false) so .play() runs standalone without replacing
+   * the main scheduler pattern. Note names are lowercased for Strudel compatibility.
    */
   noteOn(note: string, vel: number): void {
     this.ensureInitialized()
@@ -98,13 +99,16 @@ export class StrudelEngine {
 
     const gain = Math.max(0, Math.min(1, vel))
     const { s, effects } = this.keyboardConfig
-    let pattern = `note("${note}").s("${s}").gain(${gain})`
+    const lowerNote = note.toLowerCase()
+    let pattern = `note("${lowerNote}").s("${s}").gain(${gain})`
     if (effects) {
       pattern += `.${effects}`
     }
     pattern += '.play()'
 
-    this.strudelModule!.evaluate(pattern, true).catch((err: unknown) => {
+    // autoplay=false: .play() triggers the note independently,
+    // without replacing the main sequencer pattern
+    this.strudelModule!.evaluate(pattern, false).catch((err: unknown) => {
       console.error('[StrudelEngine] noteOn failed:', err)
     })
   }
