@@ -119,3 +119,15 @@ describe('store', () => {
     expect(useAppStore.getState().patternError).toBeNull()
   })
 })
+
+describe('synthType', () => {
+  it('defaults to sine', () => {
+    const state = useAppStore.getState()
+    expect(state.synthType).toBe('sine')
+  })
+
+  it('setSynthType updates the value', () => {
+    useAppStore.getState().setSynthType('triangle')
+    expect(useAppStore.getState().synthType).toBe('triangle')
+  })
+})

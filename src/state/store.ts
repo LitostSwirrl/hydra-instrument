@@ -75,6 +75,9 @@ export interface AppState {
 
   patternError: string | null
   setPatternError: (error: string | null) => void
+
+  synthType: string
+  setSynthType: (type: string) => void
 }
 
 const initialState = {
@@ -108,6 +111,8 @@ const initialState = {
   bpm: 120,
 
   patternError: null as string | null,
+
+  synthType: 'sine',
 }
 
 export const useAppStore = create<AppState>()(
@@ -149,6 +154,7 @@ export const useAppStore = create<AppState>()(
       set({ cycle, density, onset, patternNote }),
     setBpm: (bpm) => set({ bpm: Math.max(20, Math.min(300, bpm)) }),
     setPatternError: (error) => set({ patternError: error }),
+    setSynthType: (type) => set({ synthType: type }),
   }))
 )
 
@@ -161,5 +167,6 @@ export function getInitialState() {
     ui: { ...initialState.ui },
     uiMode: 'simple' as UIMode,
     macros: { ...initialState.macros },
+    synthType: 'sine',
   }
 }
