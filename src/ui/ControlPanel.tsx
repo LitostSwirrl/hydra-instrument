@@ -1,6 +1,8 @@
 import { ReactNode } from 'react'
 import { PatternEditor } from './PatternEditor'
 import { Slider } from './widgets/Slider'
+import { PillSelector } from './widgets/PillSelector'
+import { OctaveControl } from './widgets/OctaveControl'
 
 interface ControlPanelProps {
   open: boolean
@@ -15,6 +17,10 @@ interface ControlPanelProps {
   patternError?: string | null
   macros?: { tone: number; space: number; intensity: number }
   onMacroChange?: (name: 'tone' | 'space' | 'intensity', value: number) => void
+  synthType?: string
+  onSynthTypeChange?: (type: string) => void
+  octave?: number
+  onOctaveChange?: (octave: number) => void
   bpm?: number
   onBpmChange?: (bpm: number) => void
   onTogglePattern?: () => void
@@ -30,6 +36,13 @@ const sectionHeaderStyle: React.CSSProperties = {
   margin: '0 0 10px 0',
 }
 
+const SYNTH_OPTIONS = [
+  { value: 'sine', label: 'sine' },
+  { value: 'triangle', label: 'tri' },
+  { value: 'square', label: 'square' },
+  { value: 'sawtooth', label: 'saw' },
+]
+
 export function ControlPanel({
   open,
   uiMode,
@@ -43,6 +56,10 @@ export function ControlPanel({
   patternError,
   macros,
   onMacroChange,
+  synthType,
+  onSynthTypeChange,
+  octave,
+  onOctaveChange,
   bpm,
   onBpmChange,
   onTogglePattern,
@@ -151,11 +168,25 @@ export function ControlPanel({
               isPlaying={patternPlaying}
               error={patternError ?? null}
             />
+            {synthType !== undefined && onSynthTypeChange && octave !== undefined && onOctaveChange && (
+              <div style={{ marginBottom: '16px' }}>
+                <p style={sectionHeaderStyle}>Instrument</p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <PillSelector
+                    options={SYNTH_OPTIONS}
+                    value={synthType}
+                    accentColor="#B0B8C4"
+                    onChange={onSynthTypeChange}
+                  />
+                  <OctaveControl octave={octave} onChange={onOctaveChange} accentColor="#B0B8C4" />
+                </div>
+              </div>
+            )}
             <div style={{ marginBottom: '16px' }}>
               <p style={sectionHeaderStyle}>MACROS</p>
-              <Slider label="Tone" value={macros.tone} onChange={(v) => onMacroChange('tone', v)} min={0} max={1} step={0.01} />
-              <Slider label="Space" value={macros.space} onChange={(v) => onMacroChange('space', v)} min={0} max={1} step={0.01} />
-              <Slider label="Intensity" value={macros.intensity} onChange={(v) => onMacroChange('intensity', v)} min={0} max={1} step={0.01} />
+              <Slider label="Filter" value={macros.tone} onChange={(v) => onMacroChange('tone', v)} min={0} max={1} step={0.01} />
+              <Slider label="Reverb" value={macros.space} onChange={(v) => onMacroChange('space', v)} min={0} max={1} step={0.01} />
+              <Slider label="Volume" value={macros.intensity} onChange={(v) => onMacroChange('intensity', v)} min={0} max={1} step={0.01} />
             </div>
           </>
         )}

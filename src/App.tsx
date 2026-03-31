@@ -724,6 +724,10 @@ export default function App() {
             patternError={patternError}
             macros={macros}
             onMacroChange={handleMacroChange}
+            synthType={synthType}
+            onSynthTypeChange={handleSynthTypeChange}
+            octave={octave}
+            onOctaveChange={handleOctaveChange}
             bpm={bpm}
             onBpmChange={handleBpmChange}
             onTogglePattern={handleTogglePattern}
