@@ -715,6 +715,7 @@ export default function App() {
             uiMode={uiMode}
             onToggleMode={handleToggleMode}
             onShowHelp={handleShowHelp}
+            onTogglePanel={() => useAppStore.getState().togglePanel()}
           />
 
           <ControlPanel

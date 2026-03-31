@@ -93,7 +93,7 @@ const initialState = {
 
   mouse: { x: 0, y: 0 },
 
-  ui: { panelOpen: false, activeSection: 'audio' as UIState['activeSection'] },
+  ui: { panelOpen: true, activeSection: 'audio' as UIState['activeSection'] },
 
   uiMode: 'simple' as UIMode,
 

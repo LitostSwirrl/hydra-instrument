@@ -37,11 +37,11 @@ describe('store', () => {
   })
 
   it('togglePanel flips panelOpen', () => {
-    expect(useAppStore.getState().ui.panelOpen).toBe(false)
-    useAppStore.getState().togglePanel()
     expect(useAppStore.getState().ui.panelOpen).toBe(true)
     useAppStore.getState().togglePanel()
     expect(useAppStore.getState().ui.panelOpen).toBe(false)
+    useAppStore.getState().togglePanel()
+    expect(useAppStore.getState().ui.panelOpen).toBe(true)
   })
 
   it('setNoteInfo updates velocity and frequency', () => {
