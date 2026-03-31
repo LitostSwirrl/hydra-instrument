@@ -25,12 +25,7 @@ const SOURCE_OPTIONS = [
   { value: 'shape', label: 'shape' },
   { value: 'gradient', label: 'gradient' },
   { value: 'solid', label: 'solid' },
-  { value: 'sacredGeometry', label: 'sacredGeometry' },
-  { value: 'tribalMask', label: 'tribalMask' },
-  { value: 'particleField', label: 'particleField' },
-  { value: 'voidPulse', label: 'voidPulse' },
-  { value: 'ritualFire', label: 'ritualFire' },
-  { value: 'paisleyFlow', label: 'paisleyFlow' },
+  { value: 'src', label: 'src' },
 ]
 
 const TRANSFORM_OPTIONS = [
@@ -71,30 +66,6 @@ const SOURCE_PARAMS: Record<string, { key: string; label: string; min: number; m
     { key: 'r', label: 'R', min: 0, max: 1, step: 0.01 },
     { key: 'g', label: 'G', min: 0, max: 1, step: 0.01 },
     { key: 'b', label: 'B', min: 0, max: 1, step: 0.01 },
-  ],
-  sacredGeometry: [
-    { key: 'pulse', label: 'Pulse', min: 0, max: 5, step: 0.01 },
-    { key: 'rings', label: 'Rings', min: 1, max: 10, step: 1 },
-  ],
-  tribalMask: [
-    { key: 'symmetry', label: 'Symmetry', min: 1, max: 12, step: 1 },
-    { key: 'glow', label: 'Glow', min: 0, max: 2, step: 0.01 },
-  ],
-  particleField: [
-    { key: 'density', label: 'Density', min: 0, max: 1, step: 0.01 },
-  ],
-  voidPulse: [
-    { key: 'depth', label: 'Depth', min: 0, max: 2, step: 0.01 },
-    { key: 'rate', label: 'Rate', min: 0, max: 5, step: 0.01 },
-  ],
-  ritualFire: [
-    { key: 'turbulence', label: 'Turb', min: 0, max: 3, step: 0.01 },
-    { key: 'height', label: 'Height', min: 0, max: 2, step: 0.01 },
-  ],
-  paisleyFlow: [
-    { key: 'density', label: 'Density', min: 1, max: 8, step: 0.1 },
-    { key: 'speed', label: 'Speed', min: 0, max: 3, step: 0.01 },
-    { key: 'colorShift', label: 'Color', min: 0, max: 6.28, step: 0.01 },
   ],
 }
 
