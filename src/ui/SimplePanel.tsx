@@ -9,23 +9,11 @@ interface SimplePanelProps {
   onToneChange: (value: number) => void
   space: number
   onSpaceChange: (value: number) => void
-  visualGroup: string
-  onVisualGroupChange: (group: string) => void
-  intensity: number
-  onIntensityChange: (value: number) => void
   bpm: number
   onBpmChange: (bpm: number) => void
   patternPlaying: boolean
   onTogglePattern: () => void
 }
-
-const VISUAL_GROUP_OPTIONS = [
-  { value: 'Geometry', label: 'Geometry' },
-  { value: 'Mask', label: 'Mask' },
-  { value: 'Fire', label: 'Fire' },
-  { value: 'Particles', label: 'Particles' },
-  { value: 'Flow', label: 'Flow' },
-]
 
 const sectionStyle = (color: string): React.CSSProperties => ({
   fontSize: '11px',
@@ -45,10 +33,6 @@ export function SimplePanel({
   onToneChange,
   space,
   onSpaceChange,
-  visualGroup,
-  onVisualGroupChange,
-  intensity,
-  onIntensityChange,
   bpm,
   onBpmChange,
   patternPlaying,
@@ -75,19 +59,6 @@ export function SimplePanel({
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
           <Slider label="Tone" value={tone} min={0} max={1} step={0.01} accentColor="#B0B8C4" onChange={onToneChange} />
           <Slider label="Space" value={space} min={0} max={1} step={0.01} accentColor="#B0B8C4" onChange={onSpaceChange} />
-        </div>
-      </div>
-
-      <div>
-        <p style={sectionStyle('#B0B8C4')}>Visuals</p>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <PillSelector
-            options={VISUAL_GROUP_OPTIONS}
-            value={visualGroup}
-            accentColor="#B0B8C4"
-            onChange={onVisualGroupChange}
-          />
-          <Slider label="Intensity" value={intensity} min={0} max={1} step={0.01} accentColor="#B0B8C4" onChange={onIntensityChange} />
         </div>
       </div>
 

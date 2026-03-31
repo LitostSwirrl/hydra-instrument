@@ -88,14 +88,6 @@ const TRANSFORM_SOURCE_COUNT: Record<string, number> = {
   modulateScale: 1,
 }
 
-const VISUAL_GROUP_TO_SOURCE: Record<string, string> = {
-  Geometry: 'shape',
-  Mask: 'voronoi',
-  Fire: 'noise',
-  Particles: 'osc',
-  Flow: 'gradient',
-}
-
 type ChainArg = number | string | ChainNode
 
 function positionalToNamed(
@@ -186,8 +178,6 @@ export default function App() {
   const [visualSource, setVisualSource] = useState('osc')
   const [visualSourceArgs, setVisualSourceArgs] = useState<Record<string, number>>({})
   const [visualTransforms, setVisualTransforms] = useState<VisualTransformUI[]>([])
-
-  const [visualGroup, setVisualGroup] = useState('Geometry')
 
   // Keep a ref to the current chain config for rebuilding
   const chainRef = useRef<HydraChainConfig>({
@@ -586,12 +576,6 @@ export default function App() {
     strudelEngineRef.current?.setBPM(value)
   }, [])
 
-  const handleVisualGroupChange = useCallback((group: string) => {
-    setVisualGroup(group)
-    const source = VISUAL_GROUP_TO_SOURCE[group] ?? 'osc'
-    handleSourceChange(source)
-  }, [handleSourceChange])
-
   // ---------- MappingPanel callbacks ----------
   const handleAddMapping = useCallback(() => {
     const newMapping: Mapping = {
@@ -734,10 +718,6 @@ export default function App() {
                 onToneChange={(v) => handleMacroChange('tone', v)}
                 space={macros.space}
                 onSpaceChange={(v) => handleMacroChange('space', v)}
-                visualGroup={visualGroup}
-                onVisualGroupChange={handleVisualGroupChange}
-                intensity={macros.intensity}
-                onIntensityChange={(v) => handleMacroChange('intensity', v)}
                 bpm={bpm}
                 onBpmChange={handleBpmChange}
                 patternPlaying={patternPlaying}
