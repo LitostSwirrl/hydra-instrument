@@ -37,6 +37,11 @@ const TRANSFORM_OPTIONS = [
   { value: 'hue', label: 'hue' },
   { value: 'brightness', label: 'brightness' },
   { value: 'modulate', label: 'modulate' },
+  { value: 'luma', label: 'luma' },
+  { value: 'scrollX', label: 'scrollX' },
+  { value: 'repeat', label: 'repeat' },
+  { value: 'invert', label: 'invert' },
+  { value: 'contrast', label: 'contrast' },
 ]
 
 const SOURCE_PARAMS: Record<string, { key: string; label: string; min: number; max: number; step: number }[]> = {
@@ -78,6 +83,24 @@ const TRANSFORM_PARAMS: Record<string, { key: string; label: string; min: number
   hue: [{ key: 'amount', label: 'Amount', min: 0, max: 1, step: 0.01 }],
   brightness: [{ key: 'amount', label: 'Amount', min: -1, max: 2, step: 0.01 }],
   modulate: [{ key: 'amount', label: 'Amount', min: 0, max: 1, step: 0.01 }],
+  diff: [],
+  blend: [{ key: 'amount', label: 'Amount', min: 0, max: 1, step: 0.01 }],
+  mult: [],
+  modulateScale: [{ key: 'multiple', label: 'Multiple', min: -1, max: 2, step: 0.01 }],
+  luma: [
+    { key: 'threshold', label: 'Threshold', min: 0, max: 1, step: 0.01 },
+    { key: 'tolerance', label: 'Tolerance', min: 0, max: 1, step: 0.01 },
+  ],
+  scrollX: [
+    { key: 'scrollX', label: 'Amount', min: -1, max: 1, step: 0.01 },
+    { key: 'speed', label: 'Speed', min: -1, max: 1, step: 0.01 },
+  ],
+  repeat: [
+    { key: 'repeatX', label: 'X', min: 1, max: 20, step: 1 },
+    { key: 'repeatY', label: 'Y', min: 1, max: 20, step: 1 },
+  ],
+  invert: [{ key: 'amount', label: 'Amount', min: 0, max: 1, step: 0.01 }],
+  contrast: [{ key: 'amount', label: 'Amount', min: 0, max: 4, step: 0.01 }],
 }
 
 const sectionHeaderStyle: React.CSSProperties = {

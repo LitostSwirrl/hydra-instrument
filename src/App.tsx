@@ -48,6 +48,15 @@ const TRANSFORM_ARG_KEYS: Record<string, string[]> = {
   brightness: ['amount'],
   modulate: ['amount'],
   color: ['r', 'g', 'b'],
+  diff: [],
+  blend: ['amount'],
+  mult: [],
+  modulateScale: ['multiple'],
+  luma: ['threshold', 'tolerance'],
+  scrollX: ['scrollX', 'speed'],
+  repeat: ['repeatX', 'repeatY'],
+  invert: ['amount'],
+  contrast: ['amount'],
 }
 
 const TRANSFORM_ARG_DEFAULTS: Record<string, Record<string, number>> = {
@@ -59,6 +68,23 @@ const TRANSFORM_ARG_DEFAULTS: Record<string, Record<string, number>> = {
   hue: { amount: 0 },
   brightness: { amount: 0 },
   modulate: { amount: 0.1 },
+  diff: {},
+  blend: { amount: 0.5 },
+  mult: {},
+  modulateScale: { multiple: 1 },
+  luma: { threshold: 0.5, tolerance: 0.1 },
+  scrollX: { scrollX: 0.5, speed: 0 },
+  repeat: { repeatX: 3, repeatY: 3 },
+  invert: { amount: 1 },
+  contrast: { amount: 1.5 },
+}
+
+const TRANSFORM_SOURCE_COUNT: Record<string, number> = {
+  diff: 1,
+  blend: 1,
+  mult: 1,
+  modulate: 1,
+  modulateScale: 1,
 }
 
 const VISUAL_GROUP_TO_SOURCE: Record<string, string> = {
@@ -74,13 +100,13 @@ type ChainArg = number | string | ChainNode
 function positionalToNamed(
   fn: string,
   args: ChainArg[],
-  keyMap: Record<string, string[]>
+  keyMap: Record<string, string[]>,
+  argOffset = 0
 ): Record<string, number> {
   const keys = keyMap[fn] ?? []
   const result: Record<string, number> = {}
   keys.forEach((key, i) => {
-    const val = args[i]
-    // non-number args (strings, ChainNode) show as 0 in UI
+    const val = args[i + argOffset]
     result[key] = typeof val === 'number' ? val : 0
   })
   return result
@@ -90,15 +116,20 @@ function namedToPositional(
   fn: string,
   named: Record<string, number>,
   original: ChainArg[],
-  keyMap: Record<string, string[]>
+  keyMap: Record<string, string[]>,
+  argOffset = 0
 ): ChainArg[] {
   const keys = keyMap[fn] ?? []
-  return keys.map((key, i) => {
-    const origVal = original[i]
-    // Preserve string/ChainNode mapping targets
-    if (typeof origVal === 'string' || (typeof origVal === 'object' && origVal !== null)) return origVal
-    return named[key] ?? (typeof origVal === 'number' ? origVal : 0)
+  const result = original.slice(0, argOffset)
+  keys.forEach((key, i) => {
+    const origVal = original[i + argOffset]
+    if (typeof origVal === 'string' || (typeof origVal === 'object' && origVal !== null)) {
+      result.push(origVal)
+    } else {
+      result.push(named[key] ?? (typeof origVal === 'number' ? origVal : 0))
+    }
   })
+  return result
 }
 
 function chainToVisualUI(chain: HydraChainConfig): {
@@ -111,7 +142,7 @@ function chainToVisualUI(chain: HydraChainConfig): {
     sourceArgs: positionalToNamed(chain.source.fn, chain.source.args, SOURCE_ARG_KEYS),
     transforms: chain.transforms.map((t) => ({
       fn: t.fn,
-      args: positionalToNamed(t.fn, t.args, TRANSFORM_ARG_KEYS),
+      args: positionalToNamed(t.fn, t.args, TRANSFORM_ARG_KEYS, TRANSFORM_SOURCE_COUNT[t.fn] ?? 0),
     })),
   }
 }
@@ -244,13 +275,15 @@ export default function App() {
         },
         transforms: transforms.map((t, i) => {
           const existingTransform = chainRef.current.transforms[i]
+          const offset = TRANSFORM_SOURCE_COUNT[t.fn] ?? 0
           return {
             fn: t.fn,
             args: namedToPositional(
               t.fn,
               t.args,
               existingTransform?.fn === t.fn ? existingTransform.args : [],
-              TRANSFORM_ARG_KEYS
+              TRANSFORM_ARG_KEYS,
+              offset
             ),
           }
         }),
