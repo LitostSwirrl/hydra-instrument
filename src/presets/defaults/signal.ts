@@ -50,6 +50,22 @@ export const signalPreset: Preset = {
       smooth: 0,
       curve: 'linear',
     },
+    {
+      id: 'signal-map-2',
+      source: 'macro.tone',
+      target: 'osc.frequency',
+      range: [100, 400],
+      smooth: 0.1,
+      curve: 'linear',
+    },
+    {
+      id: 'signal-map-3',
+      source: 'macro.space',
+      target: 'kaleid.nSides',
+      range: [100, 300],
+      smooth: 0.15,
+      curve: 'linear',
+    },
   ],
   meta: {
     createdAt: '2026-03-30T00:00:00.000Z',

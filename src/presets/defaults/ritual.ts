@@ -37,7 +37,7 @@ export const ritualPreset: Preset = {
   mappings: [
     {
       id: 'ritual-map-0',
-      source: 'noteVelocity',
+      source: 'onset',
       target: 'kaleid.sides',
       range: [3, 12],
       smooth: 0,
@@ -49,6 +49,22 @@ export const ritualPreset: Preset = {
       target: 'osc.freq',
       range: [30, 60],
       smooth: 0.1,
+      curve: 'linear',
+    },
+    {
+      id: 'ritual-map-2',
+      source: 'macro.tone',
+      target: 'modulateScale.multiple',
+      range: [-0.06, 0.01],
+      smooth: 0.1,
+      curve: 'linear',
+    },
+    {
+      id: 'ritual-map-3',
+      source: 'macro.intensity',
+      target: 'scale.amount',
+      range: [0.7, 0.95],
+      smooth: 0.15,
       curve: 'linear',
     },
   ],

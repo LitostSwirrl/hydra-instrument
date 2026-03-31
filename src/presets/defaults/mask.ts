@@ -24,19 +24,35 @@ export const maskPreset: Preset = {
   mappings: [
     {
       id: 'mask-map-0',
-      source: 'noteFrequency',
-      target: 'mask.grid',
-      range: [4, 12],
-      smooth: 0,
-      curve: 'step',
-    },
-    {
-      id: 'mask-map-1',
       source: 'fft[2]',
       target: 'mask.rotate',
       range: [-0.05, 0.05],
       smooth: 0.1,
       curve: 'linear',
+    },
+    {
+      id: 'mask-map-1',
+      source: 'macro.tone',
+      target: 'shape.sides',
+      range: [3, 8],
+      smooth: 0.1,
+      curve: 'step',
+    },
+    {
+      id: 'mask-map-2',
+      source: 'macro.space',
+      target: 'modulate.amount',
+      range: [0.05, 0.2],
+      smooth: 0.15,
+      curve: 'linear',
+    },
+    {
+      id: 'mask-map-3',
+      source: 'macro.intensity',
+      target: 'mask.grid',
+      range: [3, 10],
+      smooth: 0.1,
+      curve: 'step',
     },
   ],
   meta: {
