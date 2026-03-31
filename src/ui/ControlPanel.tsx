@@ -15,6 +15,9 @@ interface ControlPanelProps {
   patternError?: string | null
   macros?: { tone: number; space: number; intensity: number }
   onMacroChange?: (name: 'tone' | 'space' | 'intensity', value: number) => void
+  bpm?: number
+  onBpmChange?: (bpm: number) => void
+  onTogglePattern?: () => void
 }
 
 const sectionHeaderStyle: React.CSSProperties = {
@@ -40,6 +43,9 @@ export function ControlPanel({
   patternError,
   macros,
   onMacroChange,
+  bpm,
+  onBpmChange,
+  onTogglePattern,
 }: ControlPanelProps) {
   const modeColor = uiMode === 'simple' ? '#B0B8C4' : '#B0B8C4'
 
@@ -104,6 +110,37 @@ export function ControlPanel({
             </div>
           </button>
         </div>
+        {bpm !== undefined && onBpmChange && patternPlaying !== undefined && onTogglePattern && (
+          <div style={{ marginBottom: '16px' }}>
+            <p style={sectionHeaderStyle}>Rhythm</p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <button
+                onClick={onTogglePattern}
+                tabIndex={-1}
+                style={{
+                  width: '28px',
+                  height: '28px',
+                  borderRadius: '50%',
+                  backgroundColor: patternPlaying ? '#B0B8C4' : 'rgba(255,255,255,0.06)',
+                  border: 'none',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '12px',
+                  color: patternPlaying ? '#0a0a0f' : '#999999',
+                  transition: 'background-color 150ms',
+                  flexShrink: 0,
+                }}
+              >
+                {patternPlaying ? '\u25a0' : '\u25b6'}
+              </button>
+              <div style={{ flex: 1 }}>
+                <Slider label="BPM" value={bpm} min={60} max={200} step={1} accentColor="#B0B8C4" onChange={onBpmChange} />
+              </div>
+            </div>
+          </div>
+        )}
         {showPatternEditor && (
           <>
             <PatternEditor

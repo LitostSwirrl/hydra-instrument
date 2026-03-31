@@ -708,6 +708,9 @@ export default function App() {
             patternError={patternError}
             macros={macros}
             onMacroChange={handleMacroChange}
+            bpm={bpm}
+            onBpmChange={handleBpmChange}
+            onTogglePattern={handleTogglePattern}
           >
             {uiMode === 'simple' ? (
               <SimplePanel
@@ -718,10 +721,6 @@ export default function App() {
                 onToneChange={(v) => handleMacroChange('tone', v)}
                 space={macros.space}
                 onSpaceChange={(v) => handleMacroChange('space', v)}
-                bpm={bpm}
-                onBpmChange={handleBpmChange}
-                patternPlaying={patternPlaying}
-                onTogglePattern={handleTogglePattern}
               />
             ) : (
               <>
