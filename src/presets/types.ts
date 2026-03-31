@@ -1,4 +1,5 @@
 import { HydraChainConfig } from '../visual/HydraEngine'
+import type { MacroName } from '../state/store'
 
 // -- Expanded chain config types for nested sources and feedback --
 
@@ -18,17 +19,19 @@ export type CurveType = 'linear' | 'exponential' | 'step'
 export interface SuperdoughParam {
   key: string
   value: number
-  macro?: string
+  macro?: MacroName
   scale?: number
+}
+
+export interface KeyboardConfig {
+  s: string
+  effects: string
+  effectParams?: SuperdoughParam[]
 }
 
 export interface PresetAudio {
   pattern: string
-  keyboard: {
-    s: string
-    effects: string
-    effectParams?: SuperdoughParam[]
-  }
+  keyboard: KeyboardConfig
   macros: {
     tone: number
     space: number

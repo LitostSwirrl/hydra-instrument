@@ -1,15 +1,4 @@
-interface SuperdoughParam {
-  key: string
-  value: number
-  macro?: string
-  scale?: number
-}
-
-interface KeyboardConfig {
-  s: string
-  effects: string
-  effectParams?: SuperdoughParam[]
-}
+import type { KeyboardConfig } from '../presets/types'
 
 interface MacroDefaults {
   tone: number
@@ -27,7 +16,7 @@ const globalRef = globalThis as Record<string, unknown>
 
 export class StrudelEngine {
   private initialized = false
-  private activeNotes = new Map<string, boolean>()
+  private activeNotes = new Set<string>()
   private keyboardConfig: KeyboardConfig = { s: 'sine', effects: '', effectParams: [] }
   private triggerCallback: ((hap: unknown) => void) | null = null
   private errorCallback: ((error: string) => void) | null = null
@@ -102,12 +91,10 @@ export class StrudelEngine {
    */
   noteOn(note: string, vel: number): void {
     this.ensureInitialized()
-    this.activeNotes.set(note, true)
+    this.activeNotes.add(note)
 
     const gain = Math.max(0, Math.min(1, vel))
     const { s, effectParams } = this.keyboardConfig
-
-    // Build superdough value object with resolved macro effects
     const value: Record<string, unknown> = {
       note: note.toLowerCase(),
       s,

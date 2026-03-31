@@ -584,8 +584,12 @@ export default function App() {
     useAppStore.getState().setSynthType(type)
     const engine = strudelEngineRef.current
     if (engine) {
-      const currentEffects = currentPresetRef.current?.audio.keyboard.effects ?? ''
-      engine.setKeyboardConfig({ s: type, effects: currentEffects })
+      const currentKeyboard = currentPresetRef.current?.audio.keyboard
+      engine.setKeyboardConfig({
+        s: type,
+        effects: currentKeyboard?.effects ?? '',
+        effectParams: currentKeyboard?.effectParams ?? [],
+      })
     }
   }, [])
 
