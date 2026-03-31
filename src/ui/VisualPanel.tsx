@@ -135,7 +135,7 @@ export function VisualPanel({
   onAddTransform,
   onRemoveTransform,
 }: VisualPanelProps) {
-  const [collapsed, setCollapsed] = useState(false)
+  const [collapsed, setCollapsed] = useState(true)
   const [addTransformValue, setAddTransformValue] = useState('rotate')
 
   const sourceParams = SOURCE_PARAMS[source] ?? []

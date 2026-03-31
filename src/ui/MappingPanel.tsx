@@ -98,7 +98,7 @@ const inputStyle: React.CSSProperties = {
 }
 
 export function MappingPanel({ mappings, onAdd, onRemove, onUpdate }: MappingPanelProps) {
-  const [collapsed, setCollapsed] = useState(false)
+  const [collapsed, setCollapsed] = useState(true)
 
   return (
     <div style={{ marginBottom: '16px' }}>

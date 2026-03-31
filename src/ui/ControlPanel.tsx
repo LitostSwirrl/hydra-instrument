@@ -1,4 +1,4 @@
-import { ReactNode } from 'react'
+import { ReactNode, useState } from 'react'
 import { PatternEditor } from './PatternEditor'
 import { Slider } from './widgets/Slider'
 import { PillSelector } from './widgets/PillSelector'
@@ -64,7 +64,8 @@ export function ControlPanel({
   onBpmChange,
   onTogglePattern,
 }: ControlPanelProps) {
-  const modeColor = uiMode === 'simple' ? '#B0B8C4' : '#B0B8C4'
+  const [soundOpen, setSoundOpen] = useState(false)
+  const modeColor = '#B0B8C4'
 
   const showPatternEditor =
     uiMode === 'pro' &&
@@ -113,6 +114,7 @@ export function ControlPanel({
           fontFamily: 'sans-serif',
         }}
       >
+        {/* Mode toggle */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', marginBottom: '12px' }}>
           <button
             onClick={onToggleMode}
@@ -127,6 +129,8 @@ export function ControlPanel({
             </div>
           </button>
         </div>
+
+        {/* Rhythm (always visible) */}
         {bpm !== undefined && onBpmChange && patternPlaying !== undefined && onTogglePattern && (
           <div style={{ marginBottom: '16px' }}>
             <p style={sectionHeaderStyle}>Rhythm</p>
@@ -158,39 +162,56 @@ export function ControlPanel({
             </div>
           </div>
         )}
-        {showPatternEditor && (
-          <>
-            <PatternEditor
-              code={patternCode}
-              onChange={onPatternChange}
-              onEvaluate={onEvaluatePattern}
-              onStop={onStopPattern}
-              isPlaying={patternPlaying}
-              error={patternError ?? null}
-            />
-            {synthType !== undefined && onSynthTypeChange && octave !== undefined && onOctaveChange && (
-              <div style={{ marginBottom: '16px' }}>
-                <p style={sectionHeaderStyle}>Instrument</p>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <PillSelector
-                    options={SYNTH_OPTIONS}
-                    value={synthType}
-                    accentColor="#B0B8C4"
-                    onChange={onSynthTypeChange}
-                  />
-                  <OctaveControl octave={octave} onChange={onOctaveChange} accentColor="#B0B8C4" />
-                </div>
-              </div>
-            )}
-            <div style={{ marginBottom: '16px' }}>
-              <p style={sectionHeaderStyle}>MACROS</p>
-              <Slider label="Filter" value={macros.tone} onChange={(v) => onMacroChange('tone', v)} min={0} max={1} step={0.01} />
-              <Slider label="Reverb" value={macros.space} onChange={(v) => onMacroChange('space', v)} min={0} max={1} step={0.01} />
-              <Slider label="Volume" value={macros.intensity} onChange={(v) => onMacroChange('intensity', v)} min={0} max={1} step={0.01} />
-            </div>
-          </>
+
+        {/* Macros (always visible -- primary performance controls) */}
+        {macros && onMacroChange && (
+          <div style={{ marginBottom: '16px' }}>
+            <p style={sectionHeaderStyle}>Macros</p>
+            <Slider label="Filter" value={macros.tone} onChange={(v) => onMacroChange('tone', v)} min={0} max={1} step={0.01} accentColor="#B0B8C4" />
+            <Slider label="Reverb" value={macros.space} onChange={(v) => onMacroChange('space', v)} min={0} max={1} step={0.01} accentColor="#B0B8C4" />
+            <Slider label="Volume" value={macros.intensity} onChange={(v) => onMacroChange('intensity', v)} min={0} max={1} step={0.01} accentColor="#B0B8C4" />
+          </div>
         )}
+
+        {/* Children: simple mode = SimplePanel, pro mode = PresetBar + VisualPanel + MappingPanel */}
         {children}
+
+        {/* Pro mode: collapsible Sound section (pattern editor + instrument) */}
+        {showPatternEditor && (
+          <div style={{ marginBottom: '16px' }}>
+            <p
+              style={{ ...sectionHeaderStyle, cursor: 'pointer', userSelect: 'none' }}
+              onClick={() => setSoundOpen((o) => !o)}
+            >
+              Sound {soundOpen ? '\u25b2' : '\u25bc'}
+            </p>
+            {soundOpen && (
+              <>
+                <PatternEditor
+                  code={patternCode}
+                  onChange={onPatternChange}
+                  onEvaluate={onEvaluatePattern}
+                  onStop={onStopPattern}
+                  isPlaying={patternPlaying}
+                  error={patternError ?? null}
+                />
+                {synthType !== undefined && onSynthTypeChange && octave !== undefined && onOctaveChange && (
+                  <div style={{ marginBottom: '8px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <PillSelector
+                        options={SYNTH_OPTIONS}
+                        value={synthType}
+                        accentColor="#B0B8C4"
+                        onChange={onSynthTypeChange}
+                      />
+                      <OctaveControl octave={octave} onChange={onOctaveChange} accentColor="#B0B8C4" />
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        )}
       </div>
     </>
   )
