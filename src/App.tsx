@@ -430,8 +430,10 @@ export default function App() {
 
     // 9. Mouse handler
     const mouse = new MouseHandler(canvas, {
-      onScroll: (_delta) => {
-        // Could map scroll to something; no-op for now
+      onScroll: (delta) => {
+        const store = useAppStore.getState()
+        const step = delta > 0 ? -0.02 : 0.02
+        store.setScroll(store.scroll + step)
       },
     })
     mouse.attach()

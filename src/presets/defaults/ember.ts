@@ -61,6 +61,22 @@ export const emberPreset: Preset = {
       smooth: 0.15,
       curve: 'linear',
     },
+    {
+      id: 'ember-map-3',
+      source: 'mouse.x',
+      target: 'voronoi.speed',
+      range: [0.5, 3],
+      smooth: 0.2,
+      curve: 'linear',
+    },
+    {
+      id: 'ember-map-4',
+      source: 'scroll',
+      target: 'luma.tolerance',
+      range: [0.05, 0.5],
+      smooth: 0.1,
+      curve: 'linear',
+    },
   ],
   meta: {
     createdAt: '2026-03-30T00:00:00.000Z',

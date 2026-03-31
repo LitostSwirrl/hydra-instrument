@@ -46,6 +46,8 @@ export interface AppState {
 
   mouse: { x: number; y: number }
   setMouse: (x: number, y: number) => void
+  scroll: number
+  setScroll: (value: number) => void
 
   ui: UIState
   togglePanel: () => void
@@ -92,6 +94,7 @@ const initialState = {
   mappings: [] as Mapping[],
 
   mouse: { x: 0, y: 0 },
+  scroll: 0.5,
 
   ui: { panelOpen: true, activeSection: 'audio' as UIState['activeSection'] },
 
@@ -139,6 +142,7 @@ export const useAppStore = create<AppState>()(
       })),
 
     setMouse: (x, y) => set({ mouse: { x, y } }),
+    setScroll: (value) => set({ scroll: Math.max(0, Math.min(1, value)) }),
 
     togglePanel: () => set((s) => ({ ui: { ...s.ui, panelOpen: !s.ui.panelOpen } })),
     setActiveSection: (section) => set((s) => ({ ui: { ...s.ui, activeSection: section } })),
@@ -164,6 +168,7 @@ export function getInitialState() {
     analysis: { ...initialState.analysis, fftBands: new Array(8).fill(0) as number[] },
     mappings: [] as Mapping[],
     mouse: { ...initialState.mouse },
+    scroll: 0.5,
     ui: { ...initialState.ui },
     uiMode: 'simple' as UIMode,
     macros: { ...initialState.macros },

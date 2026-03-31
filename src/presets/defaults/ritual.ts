@@ -72,6 +72,22 @@ export const ritualPreset: Preset = {
       smooth: 0.15,
       curve: 'linear',
     },
+    {
+      id: 'ritual-map-4',
+      source: 'mouse.x',
+      target: 'rotate.angle',
+      range: [0, 3.14],
+      smooth: 0.1,
+      curve: 'linear',
+    },
+    {
+      id: 'ritual-map-5',
+      source: 'scroll',
+      target: 'kaleid.sides',
+      range: [3, 12],
+      smooth: 0,
+      curve: 'step',
+    },
   ],
   meta: {
     createdAt: '2026-03-30T00:00:00.000Z',

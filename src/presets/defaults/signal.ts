@@ -66,6 +66,22 @@ export const signalPreset: Preset = {
       smooth: 0.15,
       curve: 'linear',
     },
+    {
+      id: 'signal-map-4',
+      source: 'mouse.y',
+      target: 'rotate.angle',
+      range: [0, 6.28],
+      smooth: 0.1,
+      curve: 'linear',
+    },
+    {
+      id: 'signal-map-5',
+      source: 'scroll',
+      target: 'scale.amount',
+      range: [0.5, 2],
+      smooth: 0.1,
+      curve: 'linear',
+    },
   ],
   meta: {
     createdAt: '2026-03-30T00:00:00.000Z',

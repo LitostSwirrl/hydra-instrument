@@ -51,6 +51,10 @@ describe('resolveSource', () => {
     useAppStore.getState().setMacro('intensity', 0.9)
     expect(resolveSource('macro.intensity', useAppStore.getState())).toBe(0.9)
   })
+  it('resolves scroll', () => {
+    useAppStore.getState().setScroll(0.75)
+    expect(resolveSource('scroll', useAppStore.getState())).toBe(0.75)
+  })
 })
 
 describe('applyCurve', () => {

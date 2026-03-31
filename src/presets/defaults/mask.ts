@@ -54,6 +54,22 @@ export const maskPreset: Preset = {
       smooth: 0.1,
       curve: 'step',
     },
+    {
+      id: 'mask-map-4',
+      source: 'mouse.x',
+      target: 'shape.sides',
+      range: [3, 8],
+      smooth: 0.1,
+      curve: 'step',
+    },
+    {
+      id: 'mask-map-5',
+      source: 'scroll',
+      target: 'modulate.amount',
+      range: [0.02, 0.25],
+      smooth: 0.1,
+      curve: 'linear',
+    },
   ],
   meta: {
     createdAt: '2026-03-30T00:00:00.000Z',

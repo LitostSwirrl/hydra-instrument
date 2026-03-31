@@ -32,6 +32,7 @@ const SOURCE_OPTIONS = [
   { value: 'noteFrequency', label: 'noteFrequency' },
   { value: 'mouse.x', label: 'mouse.x' },
   { value: 'mouse.y', label: 'mouse.y' },
+  { value: 'scroll', label: 'scroll' },
   { value: 'cycle', label: 'cycle' },
   { value: 'density', label: 'density' },
   { value: 'onset', label: 'onset' },

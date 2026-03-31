@@ -9,6 +9,7 @@ export function resolveSource(sourceId: string, state: AppState): number {
     case 'noteFrequency': return state.noteFrequency
     case 'mouse.x': return state.mouse.x
     case 'mouse.y': return state.mouse.y
+    case 'scroll': return state.scroll
     case 'cycle': return state.cycle
     case 'density': return state.density
     case 'onset': return state.onset
