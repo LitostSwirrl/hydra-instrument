@@ -36,6 +36,9 @@ const SOURCE_OPTIONS = [
   { value: 'density', label: 'density' },
   { value: 'onset', label: 'onset' },
   { value: 'patternNote', label: 'patternNote' },
+  { value: 'macro.tone', label: 'macro.tone' },
+  { value: 'macro.space', label: 'macro.space' },
+  { value: 'macro.intensity', label: 'macro.intensity' },
 ]
 
 const TARGET_OPTIONS = [

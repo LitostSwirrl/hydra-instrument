@@ -39,6 +39,18 @@ describe('resolveSource', () => {
     useAppStore.getState().setPatternData(0, 0, 0, 0.6)
     expect(resolveSource('patternNote', useAppStore.getState())).toBe(0.6)
   })
+  it('resolves macro.tone', () => {
+    useAppStore.getState().setMacro('tone', 0.7)
+    expect(resolveSource('macro.tone', useAppStore.getState())).toBe(0.7)
+  })
+  it('resolves macro.space', () => {
+    useAppStore.getState().setMacro('space', 0.4)
+    expect(resolveSource('macro.space', useAppStore.getState())).toBe(0.4)
+  })
+  it('resolves macro.intensity', () => {
+    useAppStore.getState().setMacro('intensity', 0.9)
+    expect(resolveSource('macro.intensity', useAppStore.getState())).toBe(0.9)
+  })
 })
 
 describe('applyCurve', () => {

@@ -13,6 +13,9 @@ export function resolveSource(sourceId: string, state: AppState): number {
     case 'density': return state.density
     case 'onset': return state.onset
     case 'patternNote': return state.patternNote
+    case 'macro.tone': return state.macros.tone
+    case 'macro.space': return state.macros.space
+    case 'macro.intensity': return state.macros.intensity
     default: return 0
   }
 }
