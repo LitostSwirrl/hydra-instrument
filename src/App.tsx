@@ -196,6 +196,8 @@ export default function App() {
   const patternError = useAppStore((s) => s.patternError)
   const macros = useAppStore((s) => s.macros)
   const bpm = useAppStore((s) => s.bpm)
+  const synthType = useAppStore((s) => s.synthType)
+  const octave = useAppStore((s) => s.octave)
 
   // ---------- preset manager (singleton, no audio dependency) ----------
   if (!presetManagerRef.current) {
@@ -221,6 +223,7 @@ export default function App() {
       for (const [name, value] of Object.entries(preset.audio.macros)) {
         store.setMacro(name as 'tone' | 'space' | 'intensity', value)
       }
+      store.setSynthType(preset.audio.keyboard.s)
 
       // Visual
       chainRef.current = { ...preset.visual.chain }
@@ -571,6 +574,19 @@ export default function App() {
     useAppStore.getState().setMacro(name, value)
   }, [])
 
+  const handleSynthTypeChange = useCallback((type: string) => {
+    useAppStore.getState().setSynthType(type)
+    const engine = strudelEngineRef.current
+    if (engine) {
+      const currentEffects = currentPresetRef.current?.audio.keyboard.effects ?? ''
+      engine.setKeyboardConfig({ s: type, effects: currentEffects })
+    }
+  }, [])
+
+  const handleOctaveChange = useCallback((oct: number) => {
+    useAppStore.getState().setOctave(oct)
+  }, [])
+
   const handleBpmChange = useCallback((value: number) => {
     useAppStore.getState().setBpm(value)
     strudelEngineRef.current?.setBPM(value)
@@ -717,10 +733,16 @@ export default function App() {
                 presetNames={presetSlots.map((name, i) => name ?? `Slot ${i + 1}`)}
                 activePresetIndex={activeSlot}
                 onPresetSelect={handlePresetSelect}
+                synthType={synthType}
+                onSynthTypeChange={handleSynthTypeChange}
+                octave={octave}
+                onOctaveChange={handleOctaveChange}
                 tone={macros.tone}
                 onToneChange={(v) => handleMacroChange('tone', v)}
                 space={macros.space}
                 onSpaceChange={(v) => handleMacroChange('space', v)}
+                intensity={macros.intensity}
+                onIntensityChange={(v) => handleMacroChange('intensity', v)}
               />
             ) : (
               <>
