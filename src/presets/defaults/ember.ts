@@ -5,7 +5,14 @@ export const emberPreset: Preset = {
   audio: {
     pattern:
       'note("<c3 eb3 g3>/2").s("triangle").lpf(tone * 1200).room(space * 0.5).delay(space * 0.35).gain(intensity * 0.7)',
-    keyboard: { s: 'triangle', effects: 'lpf(tone * 1200).room(space * 0.5)' },
+    keyboard: {
+      s: 'triangle',
+      effects: 'lpf(tone * 1200).room(space * 0.5)',
+      effectParams: [
+        { key: 'lpf', value: 0, macro: 'tone', scale: 1200 },
+        { key: 'room', value: 0, macro: 'space', scale: 0.5 },
+      ],
+    },
     macros: { tone: 0.6, space: 0.5, intensity: 0.5 },
   },
   visual: {

@@ -5,7 +5,14 @@ export const cosmosPreset: Preset = {
   audio: {
     pattern:
       'note("<c3 g3 e3 b3>/8").s("sine").room(space * 0.9).delay(space * 0.5).gain(intensity * 0.6)',
-    keyboard: { s: 'sine', effects: 'room(space * 0.9).delay(space * 0.5)' },
+    keyboard: {
+      s: 'sine',
+      effects: 'room(space * 0.9).delay(space * 0.5)',
+      effectParams: [
+        { key: 'room', value: 0, macro: 'space', scale: 0.9 },
+        { key: 'delay', value: 0, macro: 'space', scale: 0.5 },
+      ],
+    },
     macros: { tone: 0.5, space: 0.9, intensity: 0.4 },
   },
   visual: {

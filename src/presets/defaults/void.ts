@@ -5,7 +5,14 @@ export const voidPreset: Preset = {
   audio: {
     pattern:
       'note("<c3 e3 g3>/4").s("sine").lpf(tone * 2000 + 200).room(space * 0.8).gain(intensity * 0.7)',
-    keyboard: { s: 'sine', effects: 'lpf(tone * 2000 + 200).room(space * 0.8)' },
+    keyboard: {
+      s: 'sine',
+      effects: 'lpf(tone * 2000 + 200).room(space * 0.8)',
+      effectParams: [
+        { key: 'lpf', value: 200, macro: 'tone', scale: 2000 },
+        { key: 'room', value: 0, macro: 'space', scale: 0.8 },
+      ],
+    },
     macros: { tone: 0.5, space: 0.85, intensity: 0.5 },
   },
   visual: {

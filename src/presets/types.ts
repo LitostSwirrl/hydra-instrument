@@ -15,11 +15,19 @@ export interface TransformNode {
 
 export type CurveType = 'linear' | 'exponential' | 'step'
 
+export interface SuperdoughParam {
+  key: string
+  value: number
+  macro?: string
+  scale?: number
+}
+
 export interface PresetAudio {
   pattern: string
   keyboard: {
     s: string
     effects: string
+    effectParams?: SuperdoughParam[]
   }
   macros: {
     tone: number

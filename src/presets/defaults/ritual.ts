@@ -5,7 +5,14 @@ export const ritualPreset: Preset = {
   audio: {
     pattern:
       's("bd:4 ~ cp bd:4").bank("RolandTR808").room(space * 0.6).gain(intensity)',
-    keyboard: { s: 'triangle', effects: 'room(space * 0.6).delay(0.3)' },
+    keyboard: {
+      s: 'triangle',
+      effects: 'room(space * 0.6).delay(0.3)',
+      effectParams: [
+        { key: 'room', value: 0, macro: 'space', scale: 0.6 },
+        { key: 'delay', value: 0.3 },
+      ],
+    },
     macros: { tone: 0.5, space: 0.6, intensity: 0.7 },
   },
   visual: {

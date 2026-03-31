@@ -5,7 +5,14 @@ export const signalPreset: Preset = {
   audio: {
     pattern:
       'note("c4 e4 g4 b4 c5 b4 g4 e4").fast(2).s("sawtooth").lpf(tone * 4000).delay(0.45).gain(intensity * 0.8)',
-    keyboard: { s: 'sawtooth', effects: 'lpf(tone * 4000).delay(0.45)' },
+    keyboard: {
+      s: 'sawtooth',
+      effects: 'lpf(tone * 4000).delay(0.45)',
+      effectParams: [
+        { key: 'lpf', value: 0, macro: 'tone', scale: 4000 },
+        { key: 'delay', value: 0.45 },
+      ],
+    },
     macros: { tone: 0.8, space: 0.3, intensity: 0.6 },
   },
   visual: {

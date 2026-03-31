@@ -1,6 +1,14 @@
+interface SuperdoughParam {
+  key: string
+  value: number
+  macro?: string
+  scale?: number
+}
+
 interface KeyboardConfig {
   s: string
   effects: string
+  effectParams?: SuperdoughParam[]
 }
 
 interface MacroDefaults {
@@ -20,7 +28,7 @@ const globalRef = globalThis as Record<string, unknown>
 export class StrudelEngine {
   private initialized = false
   private activeNotes = new Map<string, boolean>()
-  private keyboardConfig: KeyboardConfig = { s: 'sine', effects: '' }
+  private keyboardConfig: KeyboardConfig = { s: 'sine', effects: '', effectParams: [] }
   private triggerCallback: ((hap: unknown) => void) | null = null
   private errorCallback: ((error: string) => void) | null = null
   private repl: { setCps: (cps: number) => void } | null = null
@@ -89,26 +97,31 @@ export class StrudelEngine {
   }
 
   /**
-   * Inject a one-shot note using the current keyboard config synth and effects.
-   * Uses evaluate(code, false) so .play() runs standalone without replacing
-   * the main scheduler pattern. Note names are lowercased for Strudel compatibility.
+   * Trigger a one-shot note via superdough -- bypasses the Strudel transpiler
+   * entirely for near-instant audio. Resolves effect params from current macros.
    */
   noteOn(note: string, vel: number): void {
     this.ensureInitialized()
     this.activeNotes.set(note, true)
 
     const gain = Math.max(0, Math.min(1, vel))
-    const { s, effects } = this.keyboardConfig
-    const lowerNote = note.toLowerCase()
-    let pattern = `note("${lowerNote}").s("${s}").gain(${gain})`
-    if (effects) {
-      pattern += `.${effects}`
-    }
-    pattern += '.play()'
+    const { s, effectParams } = this.keyboardConfig
 
-    // autoplay=false: .play() triggers the note independently,
-    // without replacing the main sequencer pattern
-    this.strudelModule!.evaluate(pattern, false).catch((err: unknown) => {
+    // Build superdough value object with resolved macro effects
+    const value: Record<string, unknown> = {
+      note: note.toLowerCase(),
+      s,
+      gain,
+    }
+    if (effectParams) {
+      for (const p of effectParams) {
+        const macroVal = p.macro ? (globalRef[p.macro] as number ?? 0) : 0
+        value[p.key] = macroVal * (p.scale ?? 1) + p.value
+      }
+    }
+
+    const ctx = this.strudelModule!.getAudioContext()
+    this.strudelModule!.superdough(value, ctx.currentTime, 0.5).catch((err: unknown) => {
       console.error('[StrudelEngine] noteOn failed:', err)
     })
   }

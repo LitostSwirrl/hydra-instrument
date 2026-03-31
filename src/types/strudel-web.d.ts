@@ -20,4 +20,12 @@ declare module '@strudel/web' {
     reset: () => void
   }
   export function getSuperdoughAudioController(): SuperdoughAudioController
+
+  // Direct audio trigger -- bypasses transpiler for instant playback
+  export function superdough(
+    value: Record<string, unknown>,
+    deadline: number,
+    duration: number,
+    cps?: number,
+  ): Promise<void>
 }

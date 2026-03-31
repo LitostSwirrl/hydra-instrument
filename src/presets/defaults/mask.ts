@@ -5,7 +5,14 @@ export const maskPreset: Preset = {
   audio: {
     pattern:
       'note("c3 [e3 g3] c3 [a3 c4]").s("square").lpf(tone * 500).room(space * 0.55).dist("0.3:.2").gain(intensity * 0.8)',
-    keyboard: { s: 'square', effects: 'lpf(tone * 500).room(space * 0.55)' },
+    keyboard: {
+      s: 'square',
+      effects: 'lpf(tone * 500).room(space * 0.55)',
+      effectParams: [
+        { key: 'lpf', value: 0, macro: 'tone', scale: 500 },
+        { key: 'room', value: 0, macro: 'space', scale: 0.55 },
+      ],
+    },
     macros: { tone: 0.5, space: 0.55, intensity: 0.6 },
   },
   visual: {
