@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
-  base: '/hydra-instrument/',
+  base: '/',
   plugins: [react(), tailwindcss()],
   define: {
     global: {},
